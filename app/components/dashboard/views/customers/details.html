@@ -1,0 +1,226 @@
+<div class="container hidesm" ng-class="{'deactive': selectedCustomer.entity.status == 'inactive'}">
+    <a ui-sref="dashboard.customers.all" class="button-icon float-left">
+      <img src="./assets/images/icon-back.png" alt="Kappa">
+    </a>
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-tb">{{selectedCustomer.entity.salutation + ' ' +  selectedCustomer.entity.displayName}}<span style="padding-left: 5px !important" ng-show="selectedCustomer.entity.status == 'inactive'"> (Deactivated)</span></h3>
+    <div class="actions float-right layout-margin-tb">
+      <a ui-sref="dashboard.customers.edit({customerId:selectedCustomerId})" ui-sref-opts="{reload: true, notify: true}" class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a>
+      <button class="button button-small button-info text-uppercase layout-margin-r menu">New <img src="./assets/images/dropdown-arrow-w.png" alt="">
+        <ul class="submenu list-clear layout-no-padding text-left text-normalize">
+          <!--<li><a ui-sref="dashboard.sales.estimates.new">Estimate</a><li>
+          <li><a ui-sref="dashboard.sales.invoices.new">Invoice</a><li>-->
+            <li><a ng-click="NewEstimate();">Estimate</a><li>
+          <li><a ng-click="NewInvoice();">Invoice</a><li>
+          <!--<li><a href="">Recurring Invoices</a></li>-->
+          <!--<li><a ui-sref="dashboard.sales.creditnotes.new">Credit Notes</a></li>-->
+            <li><a ng-click="NewCreditNote();">Credit Notes</a></li>
+        <!--<li><a href="">Invoice Payments</a></li>-->
+          <!--<li><a ui-sref="dashboard.expenses.new">Expense</a><li>-->
+            <li><a ng-click="NewExpense();">Expense</a><li>
+          <!--<li><a href="">Recurring Expenses</a></li>
+          <li><a href="">Project</a><li>-->
+        </ul>
+      </button>
+      <div class="float-right optionDropDown" uib-dropdown>
+      <button class="button button-small button-neutral text-uppercase menu" uib-dropdown-toggle>More <img src="./assets/images/dropdown-arrow-w.png" alt="">
+      </button>
+      <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+        <li><a ui-sref="dashboard.customers.emailContact({customerId:selectedCustomerId})" ui-sref-opts="{reload: true, notify: true}">Email Contact</a></li>
+        <!--<li><a href="">Clone</a></li> data-toggle="add-contact-person"-->
+      
+          
+          
+          <li class="modal-opener" ><a href="" ng-click="createContact();">Add New Contact</a></li>
+        <li ng-if="!selectedCustomer.entity.status || selectedCustomer.entity.status == 'inactive'" ng-click="changeStatus('active');"><a href="">Activate</a></li>
+        <li ng-if="selectedCustomer.entity.status == 'active'" ng-click="changeStatus('inactive');"><a href="">Deactivate</a></li>
+        <li><a href="" ng-click="confirmDelete();">Delete</a></li>
+      </ul>
+    </div>
+    </div>
+      
+    
+
+<div class="clearfix"></div>
+
+<ul class="tabs tabs-100 container clearfix col-no-padding">
+<li class="text-center col-no-padding active" data-toggle="tab1">
+  <h4 class="text-transform text-uppercase text-weight-normalize text-color-normalize">Overview</h4></li>
+  <li class="text-center col-no-padding" data-toggle="tab2">
+    <h4 class="text-transform text-uppercase text-weight-normalize text-color-normalize">Transactions</h4></li>
+    <li class="text-center col-no-padding" data-toggle="tab3">
+      <h4 class="text-transform text-uppercase text-weight-normalize text-color-normalize">Recent Activities</h4></li>
+    </ul>
+    <div class="tab container active" data-name="tab1">
+      <div class="col-60 layout-margin-tb">
+        <h3 class="layout-margin-t text-info text-uppercase text-weight-normalize">Primary Contact Details</h3>
+
+        <table class="container table-no-border layout-margin-tb">
+          <tr class="container text-color-light" ng-show = "selectedCustomer.entity.companyName">
+            <td class="col-50 layout-padding-tb">Company Name</td>
+            <td class="col-50 layout-padding-tb">{{selectedCustomer.entity.companyName}}</td>
+          </tr><div class="clearfix"></div>
+          <tr class="container text-color-light" ng-show = "selectedCustomer.entity.firstName">
+            <td class="col-50 layout-padding-tb">Name</td>
+            <td class="col-50 layout-padding-tb">{{selectedCustomer.entity.salutation + ' ' + selectedCustomer.entity.firstName + ' ' + selectedCustomer.entity.lastName}}</td>
+          </tr><div class="clearfix"></div>
+          <tr class="container text-color-light" ng-show = "selectedCustomer.entity.phone">
+            <td class="col-50 layout-padding-tb">Mobile</td>
+            <td class="col-50 layout-padding-tb">{{selectedCustomer.entity.phone}}</td>
+          </tr><div class="clearfix"></div>
+          <tr class="container text-color-light" ng-show = "selectedCustomer.entity.email">
+            <td class="col-50 layout-padding-tb">Email Address</td>
+            <td class="col-50 layout-padding-tb">{{selectedCustomer.entity.email}}</td>
+          </tr><div class="clearfix"></div>
+        </table>
+
+        <br/>
+
+        <h3 class="layout-margin-t text-info text-uppercase text-weight-normalize">Other Details</h3>
+
+        <table class="container table-no-border layout-margin-tb">
+         
+    <tr class="container text-color-light" ng-show = "selectedCustomer.entity.currency" >
+            <td class="col-50 layout-padding-tb">Currency Code</td>
+            <td class="col-50 layout-padding-tb" >{{selectedCustomer.entity.currency}}</td>
+          </tr><div class="clearfix"></div>
+    <tr class="container text-color-light"ng-show = "selectedCustomer.entity.paymentTerms">
+            <td class="col-50 layout-padding-tb">Payment Terms</td>
+            <td class="col-50 layout-padding-tb">{{selectedCustomer.entity.paymentTerms}}</td>
+          </tr><div class="clearfix"></div>
+            
+                <tr class="container text-color-light" ng-show ="selectedCustomer.billingAddress && !selectedCustomer.entity.isSameAddress">
+                        <td class="col-50 layout-padding-tb">Billing Address</td>
+                        <td class="col-50 layout-padding-tb" style="white-space:pre-line">{{selectedCustomer.billingAddress}}</td>
+                      </tr> <div class="clearfix"></div>
+               <tr class="container text-color-light" ng-show ="selectedCustomer.shippingAddress  && !selectedCustomer.entity.isSameAddress">
+                        <td class="col-50 layout-padding-tb">Shipping Address</td>
+                        <td class="col-50 layout-padding-tb" style="white-space:pre-line">{{selectedCustomer.shippingAddress}}</td>
+                      </tr><div class="clearfix"></div>
+            
+                <tr class="container text-color-light" ng-show="selectedCustomer.entity.isSameAddress">
+                        <td class="col-50 layout-padding-tb">Billing &amp; Shipping Address</td>
+                        <td class="col-50 layout-padding-tb" style="white-space:pre-line">{{selectedCustomer.billingAddress}}</td>
+                      </tr> <div class="clearfix"></div>
+            
+  <tr class="container text-color-light" ng-show ="selectedCustomer.notes">
+            <td class="col-50 layout-padding-tb">Notes</td>
+            <td class="col-50 layout-padding-tb" style="white-space:pre-line">{{selectedCustomer.notes}}</td>
+          </tr><div class="clearfix"></div>
+            
+            
+        </table>
+
+        <br/>
+
+<h3 class="layout-margin-tb text-info text-uppercase text-weight-normalize" ng-show = "receivables">Receivables</h3>
+        <h2 class="layout-no-margin text-positive text-weight-normalize text-uppercase" ng-show = "receivables">{{ receivables}}</h2>
+          <!--
+          <h2 class="layout-no-margin text-positive text-weight-normalize text-uppercase">{{'$'+ (selectedCustomer.entity.outstanding || '0.00')}}</h2>
+-->
+        <p class="layout-no-margin col-no-padding ext-color-light">Outstanding<br><br></p>
+          
+          
+          
+      </div>
+      <div class="col-40 layout-margin-tb">
+        <h3 class="layout-margin-t text-info text-uppercase text-weight-normalize">Income &amp; Expense</h3>
+        <canvas id="barchart" height="300px !important" width="400px !important" style="width: 400px !important; height: 300px !important;"></canvas>
+        <h3 class="col-40 layout-no-margin text-positive text-weight-normalize text-uppercase">Total Income</h3>
+        <h3 class="col-40 layout-no-margin text-danger text-weight-normalize text-uppercase">Total Expense</h3>
+        <h4 class="col-40 layout-no-margin text-normalize text-weight-normalize text-uppercase">{{totalIncome}}</h4>
+        <h4 class="col-40 layout-no-margin text-normalize text-weight-normalize text-uppercase">{{totalExpense}}</h4>
+        <!--<img src="./assets/images/graph3.png" alt=""> -->
+      </div>
+      <div class="clearfix"></div>
+
+      <table class="container table-border-tb">
+        <tr class="text-uppercase text-color-normalize">
+          <td class="layout-padding-tb">Contact Name</td>
+          <td class="layout-padding-tb">Phone</td>
+          <td class="layout-padding-tb">Email</td>
+          <td class="layout-padding-tb"></td>
+        </tr>
+        <tr class="text-color-light" ng-repeat="person in selectedCustomer.contactPersons track by $index">
+              <td class="layout-padding-tb-lg valign-top"style = "position: relative;
+               left: 18px;" >{{person.entity.salutation + ' ' + person.entity.firstname+' '+person.entity.lastname}}
+               <div ng-show="person.entity.defaultPerson">
+               <span class="glyphicon glyphicon-ok-sign" style =  "position: relative;left: -19px;top: -17px;" aria-hidden="true" > </span>
+             </div>
+              </td>
+              <td class="layout-padding-tb-lg valign-top">
+              <span ng-show="person.entity.mobile">{{'M: '+person.entity.mobile}}<br/></span>
+                  <span ng-show="person.entity.phone">{{'W: '+person.entity.phone}}</span></td>
+              <td class="layout-padding-tb-lg valign-top">{{person.entity.email}}</td>
+              <td class="layout-padding-tb-lg valign-top actions">
+                <a ng-click="editContact(this.person, $index);" class="action-edit" style = "position: relative;top: -18px;">Edit</a>
+                <button class="button button-icon" ng-click="deleteContact($index);"style = "position: relative;left: 21px;top: -17px;"
+                        ><img src="./assets/images/icon-times-round.png" alt=""></button>
+              </td>
+        </tr>
+        <tr style = "height: 50px !important;background-color: #FFFFFF;">
+         <td colspan="3"></td>
+        </tr>
+      </table>
+    </div>
+  <div class="popup-modal confirm-delete hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Are you sure you want to delete '{{selectedCustomer.entity.displayName}}' ?</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <button class="button button-info text-uppercase" ng-click="deleteCustomer(true)">Yes</button>
+      <button class="button button-info text-uppercase" ng-click="deleteCustomer(false)">No</button>
+    </div>
+  </div> 
+   <div class="tab layout-padding" data-name="tab2">
+      <table class="container table-border-b">
+        <tr class="text-uppercase text-info">
+          <td class="layout-padding-tb-lg" 
+              ng-repeat="title in ['Date','Invoice #','Ref. #','AMOUNT','Payment Method']">{{title}}</td>
+        </tr>
+        <tr class="text-color-light" ng-repeat="payment in payments">
+          <td class="layout-padding-tb-xl text-uppercase">{{payment.date}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{payment.invoiceNumber}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{payment.entity.reference}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{payment.amount}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{payment.mode}}</td>
+        </tr>
+      </table>
+    </div>
+      <!--
+    <div class="tab layout-padding" data-name="tab2">
+      <table class="container table-border-b">
+        <tr class="text-uppercase text-info">
+          <td class="layout-padding-tb-lg" 
+              ng-repeat="title in ['Date','Invoice #','Ref. #','AMT.','Balance','Status']">{{title}}</td>
+        </tr>
+        <tr class="text-color-light" ng-repeat="invoice in selectedCustomer.invoices" ng-if="invoice.entity.status=='Paid' || invoice.entity.status=='Partial Paid' || invoice.entity.status=='Partial Refunded' || invoice.entity.status=='Refunded'">
+          <td class="layout-padding-tb-xl text-uppercase">{{invoice.invoiceDate}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{invoice.entity.invoiceNumber}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{invoice.entity.poNumber}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{invoice.entity.total}}</td>
+          <td class="layout-padding-tb-xl text-uppercase">{{invoice.entity.balanceDue}}</td>
+          <td class="layout-padding-tb-xl text-weight-normalize" ng-class="{'text-danger':invoice.entity.status=='Overdue','text-positive':invoice.entity.status=='Paid','text-color-normalize':invoice.entity.status!='Overdue'||invoice.entity.status!='Paid'}">{{invoice.entity.status}}</td>
+        </tr>
+      </table>
+    </div>
+-->
+    <div class="tab layout-padding" data-name="tab3">
+      <table class="container table-border-b">
+        <tr class="text-uppercase text-info">
+          <td style="cursor: pointer;" class="layout-padding-tb-lg" ng-click = "sortByDate()">Date <img id="date" style="display: none;" src="./assets/images/dropdown-arrow-primary.png" alt=""> <img id="dateUp" style="display: none;" src="./assets/images/dropdown-arrow-primary_up.png" alt=""></td>
+          <td class="layout-padding-tb-lg">Details</td>
+          <td style="cursor: pointer;" class="layout-padding-tb-lg" ng-click = "sortByUser()">Users <img style="display: none;" id="user" src="./assets/images/dropdown-arrow-primary.png" alt=""> <img id="userUp" style="display: none;" src="./assets/images/dropdown-arrow-primary_up.png" alt=""></td>
+        </tr>
+        <tr class="text-color-light" ng-repeat="comment in comments">
+          <td class="layout-padding-tb-xl">{{comment.date}}</td>
+          <td class="layout-padding-tb-xl">{{comment.entity.comment}}</td>
+          <td class="layout-padding-tb-xl">{{comment.entity.name}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <!--<div class="popup-modal"></div>-->

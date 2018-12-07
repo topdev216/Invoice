@@ -1,0 +1,467 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+
+
+  <div class="container hidesm">
+    <a ui-sref="dashboard.sales.invoices.all" class="button-icon float-left">
+      <img src="./assets/images/icon-back.png" alt="goBack">
+    </a>
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-tb">{{invoiceNo}}</h3>
+    <div class="actions float-right layout-margin-tb" uib-dropdown>
+        <!--
+      <a ui-sref="dashboard.sales.invoices.edit({invoiceId:invoice.entity.id})"
+        class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a> -->
+        <a ng-show="isOwner" ng-click="editInvoice()"
+        class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a>
+      <button class="button button-small button-neutral text-uppercase" uib-dropdown-toggle>More
+        <img src="./assets/images/dropdown-arrow-w.png" alt="">
+      </button>
+      <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+          <li><a href="" ng-click="emailReceipt()">Send as Email</a></li>
+          <li><a href="" ng-click="textReceipt()">Send as Text</a></li>
+          <li><a href="" ng-click="invoicePrinted()">Print</a></li>
+          <li class="modal-opener" data-toggle="record-payment" ng-if="invoice.entity.balanceDue > 0"><a href=""
+              ng-click="prepareAddPayment()">Record Payment</a></li>
+          <li ng-show="showPayLink"><a href="{{payLink}}">Pay Now</a></li>
+          <li><a href="javascript:" ng-click="showAvailableCredits()">Apply Credit Note</a></li>
+          <li><a href="javascript:" ng-click="cloneInvoice()">Clone</a></li>
+          <li><a href="javascript:" ng-click="downloadInvoice()">Download PDF</a></li>
+          <li><a href="javascript:" ng-click="copyToClipboard()">Copy Link</a></li>
+          <li ng-show="isOwner"><a href="" ng-click="canDeleteInvoice()">Delete</a></li>
+      </ul>
+    </div>
+    <div class="clearfix"></div>
+    <hr>
+    <div ng-repeat="comment in comments">
+      <p class="log text-color-light text-weight-normalize">{{comment.date}}<span>
+        {{comment.entity.comment}} - {{comment.entity.name}}</span></p>
+    </div>
+    <a href="" class="layout-margin-tb modal-opener" data-toggle="add-comment">+ New Comment</a>
+
+    <div class="text-center layout-margin-tb">
+      <iframe  id="targetframe" name="targetframe"
+        width="1050px" Style="min-height : 1600px" frameborder="1" frameborder="0" scrolling="yes" onload='resizeIframe(this)'>
+      </iframe>
+        
+      <!-- <img src="./assets/images/invoiced.png" alt=""> -->
+    </div>
+
+    <!--
+    <p class="layout-no-padding text-center">
+      Template: 'Standard Template' - <a ng-click="changeTemplate()">Change</a>
+    </p>
+    -->
+
+    <div class="popup-modal change-template hidesm">
+      <div class="modal container">
+        <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize
+          float-left">Select Template</h3>
+        <button class="button button-icon float-right modal-close button-no-margin">
+          <img src="./assets/images/icon-times.png" alt=""></button>
+        <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+        <div class="col-80 layout-center">
+        <div class="col-30" ng-repeat="template in templates">
+          <img ng-src="{{template.url}}" alt="">
+          <p>{{template.name}}</p>
+          <div class="text-center">
+            <button class="button button-info text-uppercase"
+              ng-click="setDefaultTemplate($index)">Set as Default</button>
+          </div>
+        </div>
+      </div>
+
+        <div class="clearfix"></div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <h3 class="layout-margin-t section-title text-uppercase text-color-normalize float-left">Attachments</h3>
+      
+    <label>
+      <input type="file" style="display: none;"
+        onchange="angular.element(this).scope().addAttachment(this)" accept=".pdf,.png,.jpg,.jpeg">
+  
+      <div class="layout-margin-t button button-no-bg float-right">+ Add</div>
+    </label>
+      
+      <label id="file-error" class="float-right" style="margin-top: 35px; font-size: 14px; color: red; display: none;">Invalid file: Supported files are PDF,PNG,JPG and JPEG.</label>
+      <label id="file-size-error" class="float-right" style="margin-top: 35px; font-size: 14px; color: red; display: none;">Error : File size exceeds maximum limit 5 MB!</label>
+
+      <div class="clearfix"></div>
+
+    <table class="container table-border-tb layout-margin-tb-lg">
+      <tr class="text-uppercase text-color-normalize">
+        <td class="layout-padding-tb text-uppercase">Name</td>
+        <!--
+        <td class="layout-padding-tb text-uppercase">Date</td>
+        <td class="layout-padding-tb"></td>
+        -->
+      </tr>
+      <tr class="text-color-light" ng-repeat="attach in attachments">
+        <td class="layout-padding-tb-lg valign-top"><a ng-href="{{attach.fileUrl}}" target="_blank">{{attach.fileName1}}</a></td>
+        <!--
+        <td class="layout-padding-tb-lg valign-top">12/03/2014</td>
+        <td class="layout-padding-tb-lg valign-top actions">
+          <a class="action-edit" href="#">re-upload</a>
+          <button class="button button-icon button-no-margin">
+          <img src="./assets/images/icon-times-round.png" alt=""></button>
+        </td>
+        -->
+      </tr>
+      <!--
+      <tr class="text-color-light">
+        <td class="layout-padding-tb-lg valign-top"><a href="#">documents.pdf</a></td>
+        <td class="layout-padding-tb-lg valign-top">12/05/2014</td>
+        <td class="layout-padding-tb-lg valign-top actions"><a class="action-edit" href="#">re-upload</a> <button class="button button-icon button-no-margin"><img src="./assets/images/icon-times-round.png" alt=""></button></td>
+      </tr>
+    -->
+    </table>
+
+    <div class="clearfix"></div>
+
+    <h3 class="layout-margin-t section-title text-uppercase text-color-normalize">Payments Received</h3>
+
+    <div class="container container-table layout-margin-t">
+      <div class="thead layout-padding">
+        <div class="col-15">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Date</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Payment</h3>
+        </div>
+        <div class="col-20 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Reference #</h3>
+        </div>
+        <div class="col-25 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Payment Mode</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Amount</h3>
+        </div>
+        <div class="col-10 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize"></h3>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="tbody no-border inputs-white modal-opener" ng-repeat="payment in payments" data-toggle="refund-payment"
+        ng-click="showPaymentDetail($index)">
+
+        <div class="table-row row-border show_hover">
+          <div class="col-15">
+            <p ng-class="payment.entity.deleted ? 'text-danger' : ''" class="layout-margin-tb">{{payment.date}}</p>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <label ng-class="payment.entity.deleted ? 'text-danger' : ''" class="layout-margin-tb text-color-light">{{$index+1}}</label>
+          </div>
+          <div class="col-20 layout-padding-l">
+            <p ng-class="payment.entity.deleted ? 'text-danger' : ''">{{payment.entity.reference}} <br/>
+              <label ng-show="payment.entity.deleted" class="col-20 text-danger">REFUNDED</label>
+            </p>
+          </div>
+          <div class="col-25 layout-padding-l">
+            <h3 ng-class="payment.entity.deleted ? 'text-danger' : ''" class="text-weight-normalize layout-margin-tb text-color-light">{{payment.mode}}</h3>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <h3 ng-class="payment.entity.deleted ? 'text-danger' : ''" class="text-weight-normalize layout-margin-tb text-color-light">{{payment.amount}}</h3>
+          </div>
+          <div class="col-10 layout-padding-l">
+            <button class="float-right button button-icon layout-margin-tb" style="font-size:20px">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></button>
+        <!-- <a href="#" class="float-right layout-margin-t action-edit">edit</a> -->
+          </div>
+          <div class="col-100 text-color-light layout-margin-b pull-top">
+            {{payment.entity.notes}}
+          </div>
+        </div>
+<!--
+        <div class="table-row row-border">
+          <div class="col-15">
+            <p class="layout-margin-tb">12/01/2014</p>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <a class="layout-margin-tb" href="">02</a>
+          </div>
+          <div class="col-20 layout-padding-l">
+            <p></p>
+          </div>
+          <div class="col-25 layout-padding-l">
+            <h3 class="text-weight-normalize layout-margin-tb text-color-light">Google Checkout</h3>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <h3 class="text-weight-normalize layout-margin-tb text-color-light">$15.00</h3>
+          </div>
+          <div class="col-10 layout-padding-l">
+            <button class="float-right button button-icon layout-margin-tb"><img src="./assets/images/icon-times-round.png" alt=""></button>
+            <a href="#" class="float-right layout-margin-t action-edit">edit</a>
+          </div>
+          <div class="col-100 text-color-light layout-margin-b pull-top">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+-->
+      </div>
+    </div>
+
+    <div class="clearfix spacer"></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="popup-modal apply-credit hidesm">
+
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize
+        float-left">Apply Credit worth {{totalCreditStr}}</h3>
+      <button class="button button-icon float-right modal-close button-no-margin">
+        <img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+      
+      <div class="col-80 layout-center">
+        <label class="float-left">Balance</label>
+        <label class="float-right">{{totalCreditStr}}</label>
+        <br/>
+        <br/>
+
+        <div>
+          <label class="float-left">Invoice No</label>
+          <label class="float-right">{{invoiceNo}}</label>
+          <br/>
+          <label class="float-left">Amount Due</label>
+          <label class="float-right">{{balanceDueStr}}</label>
+          <br/>
+          <label class="float-left" style="margin-top:10px">Amount to Credit</label>
+          <form id="applyCreditForm" novalidate>
+            <input name="usedCredit" type="number" onkeypress="numberValidation(event)" ng-model="creditUsed"
+              class="col-15 float-right" style="display: block;" placeholder="1.0" >
+          </form>
+        </div>
+        <br/>
+        <br/>
+
+        <div style="margin-top:20px">
+          <label class="float-left">Amount to Credit</label>
+          <label class="float-right">{{totalCreditStr}}</label>
+          <br/>
+          <label class="float-left">Remaining Credit</label>
+          <label class="float-right">{{remainingCreditStr}}</label>
+        </div>
+
+        <br/>
+        <br/>
+        <button class="button button-small button-info text-uppercase"
+          ng-click="applyCredit()">Save</button>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+  <div class="popup-modal record-payment hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Record Payment</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="paymentForm" class="inputs-white layout-margin-t float-left">
+          <div class="input-container layout-margin-b">
+            <label>Date</label>
+            <input name="paymentDate" class="col-75" type="text" uib-datepicker-popup="{{dateFormat}}"
+              ng-model="paymentDate" is-open="openPicker1" datepicker-options="dateOptions" ng-click="openDatePicker(1)" readonly>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Amount</label>
+            <input name="paymentAmount" type="text" class="col-75"  onkeypress="numberValidation(event)" placeholder="Type to add"
+              ng-model="paymentAmount">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Reference #</label>
+            <input name="paymentRef" type="text" class="col-75" placeholder="Type to add"
+              ng-model="paymentRef">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Payment Mode</label>
+            <select name="paymentMode" class="col-75" placeholder="Select or Type to add"
+              ng-model="selectedPaymentMode" ng-options="mode for mode in paymentModes">
+              <option value="" disabled>Select Payment Mode</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Notes</label>
+            <textarea class="col-75" ng-model="paymentNotes"></textarea>
+          </div>
+        </form>
+        <div class="clearfix"></div>
+        <br/>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase" ng-click="addPayment()">Save</button>
+    </div>
+  </div>
+
+  <div class="popup-modal refund-payment hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Payment Details</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="paymentForm" class="inputs-white layout-margin-t float-left">
+          <div class="input-container layout-margin-b">
+            <label>Date</label>
+            <label>{{selectedPayment.date}}</label>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Amount</label>
+            <label>{{selectedPayment.amount}}</label>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Reference #</label>
+            <label>{{selectedPayment.entity.reference}}</label>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Payment Mode</label>
+            <label>{{selectedPayment.mode}}</label>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Notes</label>
+            <label>{{selectedPayment.entity.notes}}</label>
+          </div>
+        </form>
+        <div class="clearfix"></div>
+        <br/>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase" ng-disabled="selectedPayment.disableRefund"
+        ng-click="refundPayment()">Refund</button>
+    </div>
+  </div>
+
+  <div class="popup-modal confirm-delete hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Are you sure you want to delete this invoice?</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <button class="button button-info text-uppercase" ng-click="deleteInvoice()">Yes</button>
+      <button class="button button-info text-uppercase modal-close">No</button>
+    </div>
+  </div>
+
+<div class="popup-modal confirm-refund hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Are you sure you want to refund this payment?</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <button class="button button-info text-uppercase" ng-click="doRefundPayment()">Yes</button>
+      <button class="button button-info text-uppercase modal-close">No</button>
+    </div>
+  </div>
+
+  <div class="popup-modal cannot-delete hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">You can't delete this invoice because there are recorded payments.</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <button class="button button-info text-uppercase modal-close">OK</button>
+    </div>
+  </div>
+
+  <div class="popup-modal add-comment hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Add Comment</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+      <textarea ng-model="newComment"></textarea>
+      <br/>
+      <button class="button button-info text-uppercase" ng-click="addComment()">Save</button>
+    </div>
+  </div>
+
+<div class="popup-modal email-popup hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Email to</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addItemForm" class="layout-margin-tb col-100 inputs-white">
+            <div id="email-error" style="color: red; display: none;">
+                <label>Please select at least one email</label><br><br>
+            </div>
+           <table ng-show="contacts.length" class="table-border-tb" style = "margin-bottom: 20px;">
+               <tr class="trow show_hover" ng-repeat="contact in contacts">
+                   <td class="text-uppercase text-info layout-padding-tb-lg">
+                       <label class="input-container input-checkbox-container layout-margin-tb">
+                           <input type="checkbox" ng-model="contact.selected">
+                           <span class="checkbox float-left"></span>
+                       </label>
+                   </td>
+                   <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" style="width: 750px !important;">{{contact.contactName}}</td>
+               </tr>
+            </table>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase" ng-click="sendEmail()">Send</button>
+    </div>
+  </div>
+
+<div class="popup-modal text-popup hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Text to</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addItemForm" class="layout-margin-tb col-100 inputs-white">
+            <div id="text-error" style="color: red; display: none;">
+            <label >Please select at least one phone number</label><br><br>
+            </div>
+            <table ng-show="mobileContacts.length" class="table-border-tb" style = "margin-bottom: 20px;">
+                
+                <tr class="trow show_hover" ng-repeat="contact in mobileContacts">
+                   <td class="text-uppercase text-info layout-padding-tb-lg">
+                     <label class="input-container input-checkbox-container layout-margin-tb">
+                       <input type="checkbox" ng-model="contact.selected">
+                       <span class="checkbox float-left"></span>
+                     </label>
+                   </td>
+                   <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" style="width: 750px !important;">{{contact.contactName}}</td>
+                 </tr>
+               </table>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase" ng-click="sendText()">Send</button>
+    </div>
+  </div>
+<a href="#" id="pdfLink" title="Invoice.pdf" download="Invoice.pdf" style="display: none"></a>
+
+
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

@@ -1,0 +1,152 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  <div class="container hidesm">
+
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-tb">Edit Credit Note</h3>
+    <div class="clearfix"></div>
+    <hr>
+    <form id="editCreditNoteForm" novalidate class="inputs-white layout-margin-b">
+      <div class="input-container col-60 layout-margin-b">
+        <label class="layout-padding-t-sm">Customer Name</label>
+        <select name="customer" class="col-75" ng-model="selectedCustomer" ng-change="customerChanged()"
+          ng-options="customer.fullName for customer in customers">
+          <option value="" disabled>Select Customer</option>
+        </select>
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="layout-padding-t-sm">Credit Note#</label>
+        <input name="creditNumber" class="col-75" type="text" ng-model="creditNo" disabled>
+          <!--ng-disabled="disableCreditNo"-->
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="layout-padding-t-sm">Reference #</label>
+        <input class="col-75" type="text" ng-model="refNumber">
+      </div>
+      <div class="input-container col-60 layout-margin-b datepicker-noclear">
+        <label class="layout-padding-t-sm">Credit note Date</label>
+        <input name="creditCreateDate" class="col-75 form-control" type="text" uib-datepicker-popup="{{dateFormat}}"
+          ng-model="todayDate" is-open="openPicker1" datepicker-options="dateOptions" ng-click="openDatePicker(1)" readonly>
+      </div>
+      <div class="clearfix"></div>
+    </form>
+
+    <div class="clearfix"></div>
+    <br>
+
+    <div class="container container-table layout-margin-t">
+      <div class="thead layout-padding">
+        <div class="col-30 ">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Item Details</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Quantity</h3>
+
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Price</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Tax</h3>
+        </div>
+        <div class="col-15 layout-padding-l text-center">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Amount</h3>
+        </div>
+        <div class="col-5 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize"></h3>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="tbody no-border inputs-white">
+
+      <form id="itemInfoForm" novalidate>
+        <div class="table-row" ng-repeat="creditItem in creditItems">
+
+          <div class="col-30 layout-padding">
+              <!--
+            <i class="icons float-left"><img src="./assets/images/handle.png" alt=""></i>
+            -->
+            <select tri:fix-input-name name="item{{$index}}" class="check-item ellipsis" ng-model="creditItem.selectedItem"
+              ng-options="item.entity.title for item in items" ng-change="itemChanged($index)">
+              <option value="" disabled>Select or Type to add</option>
+            </select>
+          </div>
+          <div class="col-15 layout-padding layout-padding-l text-right">
+            <input tri:fix-input-name name="qty{{$index}}" class="check-qty" type="number" placeholder="1" onkeypress="numberValidation(event)"
+              ng-model="creditItem.quantity" ng-change="reCalculateItemAmount($index)">
+          </div>
+          <div class="col-15 layout-padding layout-padding-l text-right">
+            <input tri:fix-input-name name="rate{{$index}}" class="check-rate" type="number" placeholder="10.00" onkeypress="numberValidation(event)"
+              ng-model="creditItem.rate" ng-change="reCalculateItemAmount($index)">
+          </div>
+          <div class="col-15 layout-padding layout-padding-l">
+            <select ng-model="creditItem.selectedTax" ng-options="tax.name for tax in taxes"
+              ng-change="reCalculateItemAmount($index)" class="ellipsis">
+              <option value="">None</option>
+            </select>
+          </div>
+          <div class="col-15 layout-padding layout-padding-l text-center">
+            <p class="layout-no-margin">{{creditItem.amount | currency:$:2}}</p>
+          </div>
+          <div class="col-5 layout-padding layout-padding-l text-right">
+            <button class="button button-icon button-no-margin" ng-click="removeCreditItem($index)"><img src="./assets/images/icon-times-round.png" alt=""></button>
+          </div>
+
+        </div>
+      </form>
+
+        <a href="javascript:" class="button layout-margin-tb" ng-click="addCreditItem()">
+          + Add another item</a>
+        <hr>
+        <div class="col-60 pull-right">
+          <div class="col-25">Sub Total</div>
+          <div class="col-65 text-right">{{subTotalStr}}</div>
+          <br>
+          <form class="inputs-white">
+            <div class="col-90 layout-margin-tb" ng-repeat="tax in itemTaxes">
+              <label class="col-60 text-right layout-padding-t-smm">{{tax.nameValue}}</label>
+              <label class="col-40 text-right layout-padding-t-smm">{{tax.amount}}</label>
+            </div>
+          </form>
+        </div>
+        <div class="table-row row-border layout-padding layout-margin-tb">
+          <div class="col-60 pull-right">
+            <div class="col-25"><h3 class="layout-no-margin text-uppercase text-weight-normalize">Total</h3></div>
+            <div class="col-65 text-right"><h3 class="layout-no-margin text-uppercase text-weight-normalize">
+            {{totalStr}}</h3></div>
+          </div>
+        </div>
+        <form class="table-row col-60 layout-margin-tb">
+          <div class="input-container layout-margin-b">
+            <label class="col-i-30">Notes</label>
+            <textarea class="col-70" maxlength="200" ng-model="notes" onkeyup="auto_grow(this)"></textarea>
+          </div>
+          <div class="input-container">
+            <label class="col-i-30">Terms &amp; Conditions</label>
+            <textarea class="col-70" maxlength="1000" ng-model="terms" onkeyup="auto_grow(this)"></textarea>
+          </div>
+          <!--
+          <p class="col-i-30">Attach Reference File</p>
+          <p class="col-70">
+            <input type="file" file-model="filepicker">
+          </p>
+          -->
+          
+          <!--
+          <div class="clearfix"></div>
+          <p class="col-i-30">Template Used</p>
+          <p class="col-70">'Standard Template' <a href="javascript:">Choose</a></p>
+          -->
+
+          <div class="clearfix spacer"></div>
+          <button class="button layout-margin-r text-uppercase button-info" ng-click="save()">Save</button>
+          <!--
+          <button class="button layout-margin-r text-uppercase button-info" ng-click="saveAndSend()">Save &amp; Send</button> -->
+          <button class="button layout-margin-r text-uppercase button-neutral" ng-click="cancel()">Cancel</button>
+        </form>
+
+      </div>
+    </div>
+    <div class="clearfix spacer"></div>
+    <div class="spacer"></div>
+  </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

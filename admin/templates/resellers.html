@@ -1,0 +1,390 @@
+<!-- templates/home.html -->
+
+<!-- start WRAPPER -->
+<div style="width: 90% !important" class="wrapper">
+
+	<!-- start HEADER -->
+	<div class="header cl">
+		<a class="logo logo-mobile"></a>
+		<div class="user-actions">
+			<span style="color:black !important" ng-click="openUserOptions = true;" id="user-actions-reseller">{{'Welcome, ' + sessionUsername}}<i class="fa fa-bars" style="color: #0088dd !important;margin-left:5px" aria-hidden="true"></i></span>
+			<div ng-show="openUserOptions" id="user-options-wrapper">
+				<div ng-click="openUserOptions = false;" class="window-shadow"></div>
+				<div style="width:105px" class="user-options user-options-reseller">
+					<div style="margin-right:-60%" class="arrow-top arrow-top-reseller"></div>
+					<ul style="margin-bottom: 10px">
+						<li>
+							<a ng-show="isReseller" ui-sref="resellerprofile" id="sign-out" style="color: black;padding-top:5px;padding-bottom:5px" class="">ACCOUNT</a> 
+							<a ng-hide="isReseller" ui-sref="home" id="sign-out" style="color: black;padding-top:5px;padding-bottom:5px" class="">HOME</a> 
+						</li>
+					</ul>
+					<ul>
+						<li><a ng-click="logOut()" id="sign-out" style="color: black;padding-top:5px;padding-bottom:5px" class="">SIGN OUT</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end WRAPPER -->
+
+	<!-- start CONTENT -->
+	<div class="content cl">
+		<div class="table-header cl">
+			<div class="search-control">
+				<form class="search-form">
+					<input type="text" ng-model="query" ng-model-options="{ debounce: 1000 }" ng-change="console.log('update');updateQueryResults();"/>
+					<input type="button" value=""/>
+				</form>
+			</div>
+			<h2 style="margin:0;">Admin portal</h2>
+			<a id="add-btn" ng-click="openModalCreate()" class="add-button"></a>
+		</div>
+
+		<div tagged-infinite-scroll="loadMoreQueryResults()" tagged-infinite-scroll-disabled="paginating" tagged-infinite-scroll-distance="200" class="table-content">
+			<table class="reseller-maintable">
+				<thead>
+					<tr>
+						<th>Merchant ID<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th>Bus.Name<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th>Full Name<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th>Email<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th>Phone<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th>Username<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th class="hide-mobile">Gateway Type<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th class="hide-mobile">Cost<i style="font-size: 13px;color:#d9d9d9; margin-left:2px" class="fa fa-sort-alpha-asc fa-lg" aria-hidden="true"></i></th>
+						<th class="hide-mobile"></th>
+						<th class="hide-mobile"></th>
+					</tr>
+				</thead>
+
+				<tbody ng-repeat="record in records">
+					<tr ng-click="record.showFull = !record.showFull;">
+						<td ng-bind="record.merchantID">2121313131</td>
+						<td ng-bind="record.businessName">lorem Ipusm</td>
+						<td ng-bind="record.fullName">Lonnie Spencier</td>
+						<td ng-bind="record.email">lorem@hotmail.com</td>
+						<td ng-bind="record.phoneNumber">(703) 2131313</td>
+						<td ng-bind="record.username">lspencer</td>
+						<td class="hide-mobile" ng-bind="gatewayTypeNames[record.paymentGateway] || gatewayTypeNames[4]">Auth.net</td>
+						<td class="">{{costPerMerchant | currency: "$" : 2}}</td>
+						<td class="table-actions hide-mobile">
+							<a ng-click="saveAndNotify(record,selectedUserForm);$event.stopPropagation();" ng-show="record.showFull" class="table-save"></a>
+							<a ng-click="openDeleteModal(record);$event.stopPropagation();" class="table-remove"></a></td>
+						<td class="open-sub-menu-container hide-mobile"><a ng-class="{'close-sub-menu': record.showFull }" class="open-sub-menu"></a></td>
+					</tr>
+
+					<tr ng-show="record.showFull">
+						<td class="sub-column" colspan="10">
+							<h4 style="margin:0;">BASIC INFORMATION</h4>
+							<form class="cl" novalidate name="selectedUserForm">
+								<div style="width: 50%" class="form-left form-left-full-width">
+
+									<div class="form-group cl">
+										<label style="width:25%">Merchant ID</label>
+										<input style="width: 65%; height: 30px" class="form-control" ng-model="record.merchantID"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Business Name</label>
+										<input style="width:65%" type="text" class="form-control" ng-model="record.businessName"/>
+									</div>
+
+									<div class="form-group cl" ng-class="{'has-error':!userForm.fullName && selectedUserForm.fullName.$error.required}">
+										<label style="width: 25%">Full Name</label>
+										<div style="float:left;width: 65%">
+											<input type="text" style="float:none;width: 100%" class="form-control" ng-model="record.fullName" name="fullName" required/>
+											<p style="display: none" class="help-block" ng-show="!userForm.fullName && selectedUserForm.fullName.$error.required">Full name cannot be empty!</p>
+										</div>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Address</label>
+										<input ng-model="record.address" style="width:65%" type="text" class="form-control" />
+									</div>
+									<div class="form-group cl">
+										<label style="width:25%">City</label>
+										<input ng-model="record.city" style="width:65%" type="text" class="form-control" />
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">State</label>
+										<input ng-model="record.state" style="width:65%" type="text" class="form-control"  name="state"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Zip</label>
+										<input ng-model="record.zipCode" style="width:65%" type="text" class="form-control" />
+									</div>
+								</div>
+
+								<div style="width: 50%" class="form-right">
+									<div class="form-group cl">
+										<label style="width:25%">Email</label>
+										<input style="width:65%" type="text" class="form-control" ng-model="record.email"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Phone</label>
+										<input style="width:65%" type="text" class="form-control phonenumber" ng-model="record.phoneNumber"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Username</label>
+										<input style="width:65%" disabled type="text" style="opacity: 0.3;" class="form-control" ng-model="record.username"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Password</label>
+										<input style="width:65%" type="password" placeholder="**********" class="form-control" ng-model="record.password"/>
+									</div>
+
+									<div class="form-group cl">
+										<label style="width:25%">Gateway Type</label>
+										<ul style="width:65%" class="form-dropdown">
+											<li>
+												<a ng-click="record.showDropdownSelect = true;" class="selectType">
+													<span ng-bind="gatewayTypeNames[record.paymentGateway] || gatewayTypeNames['']"></span>
+													<span></span>
+												</a>
+												<div ng-click = "record.showDropdownSelect = false;" ng-show="record.showDropdownSelect">
+													<div class="window-shadow"></div>
+													<ul>
+														<li ng-click="record.paymentGateway = '';" class="select-empty"><a>None</a></li>
+														<li ng-click="record.paymentGateway = 1;" class="select-epn"><a>EPN (eProcessing Network)</a></li>
+														<li ng-click="record.paymentGateway = 2;" class="select-authnet"><a>Auth. Net</a></li>
+													</ul>
+												</div>
+											</li>
+										</ul>
+									</div>
+
+									<div ng-show="record.paymentGateway == 1" class="gatewayType_EPN">
+										<div class="form-group cl">
+											<label style="width:25%">EPN Username</label>
+											<input style="width:65%" ng-model="record.EPNusername" type="text" class="form-control" />
+										</div>
+										<div class="form-group cl">
+											<label style="width:25%">EPN Restrict Key</label>
+											<input style="width:65%" ng-model="record.EPNrestrictKey" type="text" class="form-control" />
+										</div>
+									</div>
+
+									<div ng-show="record.paymentGateway == 2" class="gatewayType_AUTH_NET">
+										<div class="form-group cl">
+											<label>API Login ID</label>
+											<input ng-model="record.AuthNet" type="text" class="form-control" />
+										</div>
+										<div class="form-group cl">
+											<label>Transaction Key</label>
+											<input ng-model="record.AuthKey" type="text" class="form-control" />
+										</div>
+									</div>
+								</div>
+							</form>
+							<div class="merchant-portal">
+								<button ng-click="saveAndNotify(record,selectedUserForm);$event.stopPropagation();" style="color: white; background-color: #3c91f5; width: 15%; padding-top: 10px; padding-bottom: 10px; font-size: 16px; margin-bottom: 10px; cursor: pointer;">SAVE</button>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+
+				<tbody>
+
+					<tr style="background-color: #f2f2f2 !important">
+						<td class="total-row hide-mobile"></td>
+						<td class="total-row hide-mobile"></td>
+						<td class="total-row hide-mobile"></td>
+						<td class="total-row hide-mobile"></td>
+						<td class="total-row hide-mobile"></td>
+						<td class="total-before hide-mobile"></td>
+						<td class="tr-total" style="border-left: 1px solid #d9d9d9 !important;font-weight:800">Total</td>
+						<td class="tr-total" style="font-weight:800">{{costPerMerchant*records.length | currency: "$" : 2}}</td>
+						<td class="hide-mobile"></td>
+						<td class="hide-mobile"></td>
+					</tr>
+
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+	<!-- end CONTENT -->
+
+</div>
+<!-- end WRAPPER -->
+
+<!-- Delete Modal -->
+
+<div id="myModal" class="modal">
+	<div style="padding:0px !important" class="modal-content">
+
+		<div style="background-color: #d9d9d9;height: 35px" class="row">
+			<h4 style="text-align: center;padding-top: 8px">Delete</h4>
+		</div>
+
+		<div style="height: 60px" class="row">
+			<h4 style="text-align: center;padding-top: 15px">Are You Sure you want to Delete this Merchant?</h4>
+		</div>
+
+		<div style="background-color: #d9d9d9;height: 50px;text-align:center" class="row">
+			<input style="padding-left:20px !important; padding-right:20px !important;background-color: #B2B3B4;border: 1px solid #B2B3B4 !important; margin-top:10px; margin-right: 10px" type="submit" class="button submit-btn" value="Cancel" ng-click="closeDeleteModal();"/>
+
+			<input style="padding-left:20px !important; padding-right:20px !important;height:36px !important;margin-top:10px;border:none!important;margin-left: 10px" type="submit" class="button submit-btn" value="CONFIRM" ng-click="deleteAndNotify(currentRecord);$event.stopPropagation();"/>
+
+		</div>
+	</div>
+</div>
+
+<!-- start ADD BASIC INFO -->
+<script type="text/ng-template" id="add-basic-info">
+
+<div style="height:720px" class="popup popup-contain">
+	<div class="popup-wrapper">
+		<div class="sub-column">
+
+			<div class="error-message">
+				<p>Please, fix errors in red:</p>
+				<ul class="error-list">
+					<li>Test</li>                  
+	</ul>
+	</div>
+
+			<h4>New Basic Info</h4>
+			<form class="cl" name="addForm" ng-keypress="checkFields();">
+
+				<div class="form-group cl">
+					<label>Merchant ID</label>
+					<input id="MerchantID" ng-model="newUserRecord.merchantID" type="text" class="form-control" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Business Name</label>
+					<input id="BusinessName" ng-model="newUserRecord.businessName" type="text" class="form-control" required/>
+	</div>
+
+				<div class="form-group cl" ng-class="{'has-error':!newUserForm.fullName && addForm.fullName.$error.required}">
+					<label>Full Name</label>
+					<div class="full-name-div" style="float:left;">
+						<input type="text" style="float:none" class="form-control" ng-model="newUserRecord.fullName" name="fullName" required/>
+						<p style="display: none !important" class="help-block" ng-show="!newUserForm.fullName && addForm.fullName.$error.required">Full name cannot be empty!</p>
+	</div>
+	</div>
+
+				<div class="form-group cl">
+					<label>Address</label>
+					<input id="Address" type="text" class="form-control" ng-model="newUserRecord.address" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>City</label>
+					<input id="City" type="text" class="form-control" ng-model="newUserRecord.city" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>State</label>
+					<select class="form-control" ng-model="newUserRecord.state" name="state">
+						<option value="" selected disabled>Select state</option>
+						<option ng-repeat="item in statesAbbr" value="{{item}}">{{item}}</option>
+	</select>
+	</div>
+
+				<div class="form-group cl">
+					<label>Zip</label>
+					<input id="Zip" type="text" class="form-control" ng-model="newUserRecord.zip" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Email</label>
+					<input id="Email" ng-model="newUserRecord.email" type="text" class="form-control" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Phone</label>
+					<input id="Phone" type="text" class="form-control phonenumber" ng-model="newUserRecord.phoneNumber" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Username</label>
+					<input id="Username" ng-model="newUserRecord.username" type="text" class="form-control" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Password</label>
+					<input id="Password" ng-model="newUserRecord.password" type="password" class="form-control" required/>
+	</div>
+
+				<div class="form-group cl">
+					<label>Gateway Type</label>
+					<ul class="form-dropdown">
+						<li>
+							<a ng-click="newUserRecord.showDropdownSelect = true;" class="selectType">
+								<span ng-bind="gatewayTypeNames[newUserRecord.paymentGateway] || gatewayTypeNames['']"></span>
+								<span></span>
+	</a>
+							<div ng-click = "newUserRecord.showDropdownSelect = false;" ng-show="newUserRecord.showDropdownSelect">
+								<div class="window-shadow"></div>
+								<ul class="gway-options" style="display: initial; margin-bottom: 20px;">
+									<li ng-click="newUserRecord.paymentGateway = '';" class="select-empty"><a>None</a></li>
+									<li ng-click="newUserRecord.paymentGateway = '1';" class="select-epn"><a>EPN (eProcessing Network)</a></li>
+									<li ng-click="newUserRecord.paymentGateway = '2';" class="select-authnet"><a>Auth. Net</a></li>
+									<!--
+<li ng-click="newUserRecord.paymentGateway = '3';" class="select-pivotal"><a>Pivotal</a></li>
+-->
+	</ul>
+	</div>
+	</li>
+	</ul>
+	</div>
+
+				<div ng-show="newUserRecord.paymentGateway == '1'" class="gatewayType_EPN">
+					<div class="form-group cl">
+						<label>EPN Username</label>
+						<input ng-model="newUserRecord.EPNusername" type="text" class="form-control" />
+	</div>
+					<div class="form-group cl">
+						<label>EPN Restrict Key</label>
+						<input ng-model="newUserRecord.EPNrestrictKey" type="text" class="form-control" />
+	</div>
+	</div>
+
+				<div ng-show="newUserRecord.paymentGateway == '2'" class="gatewayType_AUTH_NET">
+					<div class="form-group cl">
+						<label>API Login ID</label>
+						<input ng-model="newUserRecord.AuthNet" type="text" class="form-control" />
+	</div>
+					<div class="form-group cl">
+						<label>Transaction Key</label>
+						<input ng-model="newUserRecord.AuthKey" type="text" class="form-control" />
+	</div>
+	</div>
+
+				<div ng-show="accInfo.paymentGateway == '3'" class="gatewayType_PIVOTAL">
+					<div class="form-group cl">
+						<label>Pivotal Username</label>
+						<input ng-model="newUserRecord.pivotalUsername" type="text" class="form-control" />
+	</div>
+					<div class="form-group cl">
+						<label>Pivotal Password</label>
+						<input ng-model="newUserRecord.pivotalPassword" type="text" class="form-control" />
+	</div>
+	</div>
+
+				<div class="form-group cl" ng-hide="1">
+					<lable>
+						<input type="checkbox" ng-model="newUserRecord.skipApplication">Skip Application</input>
+
+					<!--ng-disabled="addForm.$invalid"-->
+	</div>
+
+				<div  class="form-group cl" style="margin-top: 35px;background-color:#d9d9d9; margin-left:-5%;width:108%; margin-bottom:0px !important">
+					<a style="color:white;background-color: #b3b3b3;width: 200px; padding-top:10px; padding-bottom: 10px;margin-left: 17%;font-weight:800" class="button-cancel" ng-click="cancel();">Cancel</a>
+					<input style="margin-top: 10px" type="submit" class="button submit-btn" value="Submit" ng-click="ok(addForm);"/>
+	</div>
+	</form>
+	</div>
+	</div>
+	</div>
+
+</script>
+
+<!-- end ADD BASIC INFO -->

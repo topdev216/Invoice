@@ -1,0 +1,83 @@
+ <header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+
+  <div class="container hidesm">
+  
+    <h3 class="layout-margin-t section-title">Estimates</h3>
+    <hr>
+
+    <form id="settingsForm" class="inputs-white col-60">
+      <h3 class="layout-margin-tb text-weight-normalize text-uppercase">Estimate Number</h3>
+      <div class="input-container input-radio-container layout-margin-b">
+        <label class="col-25">Auto Generation</label>
+        <label class="layout-padding-t-sm col-10">
+          <span class="layout-margin-r">
+            <input type="radio" name="autogeneration" value="yes" ng-model="estimateAg">
+            <span class="radio"></span>
+          </span>
+          Yes
+        </label>
+        <label class="layout-padding-t-sm col-10">
+          <span class="layout-margin-r">
+            <input type="radio" name="autogeneration" value="no" ng-model="estimateAg">
+            <span class="radio"></span>
+          </span>
+          No
+        </label>
+      </div>
+
+      <div class="input-container layout-margin-b" ng-show="estimateAg == 'yes'">
+        <label class="layout-padding-t-smm">Prefix</label>
+        <input maxlength="60" name="prefix" type="text" class="col-75" value="EST-" ng-model="prefix">
+      </div>
+      <div class="input-container layout-margin-b" ng-show="estimateAg == 'yes'">
+        <label class="layout-padding-t-smm">Next Number</label>
+        <input maxlength="60" name="nextNumber" type="text" class="col-75" value="000002" ng-model="nxtNumber">
+      </div>
+
+      <div class="clearfix"></div>
+
+      <br>
+      <h3 class="text-uppercase text-weight-normalize layout-margin-tb">Custom Fields</h3><br>
+
+      <div class="input-container layout-margin-b" ng-repeat="field in customFields">
+        <input type="checkbox" style="box-sizing:initial; width: 14px; float: left; margin-right: 9px; margin-top: 10px !important;" ng-model="field.checked">
+        <label class="layout-padding-t-smm">Custom Field {{$index+1}}</label>
+        <input tri:fix-input-name name="name{{$index}}" class="col-45 check-name" type="text"
+          ng-model="field.name">
+        <button class="button button-icon button-no-margin" ng-click="removeField($index)">
+          <img src="./assets/images/icon-times-round.png" alt=""></button>
+      </div>
+      <!--
+      <div class="input-container layout-margin-b">
+        <label for="" class="layout-padding-t-smm">Custom Field 2</label>
+        <input type="text" class="col-75">
+      </div>
+      <div class="input-container layout-margin-b">
+        <label for="" class="layout-padding-t-smm">Custom Field 3</label>
+        <input type="text" class="col-75">
+      </div>
+      -->
+      <p class="layout-no-padding">
+        <a href="javascript:" ng-click="addField()">+Add New</a>
+      </p>
+
+      <div class="clearfix"></div>
+      <br>
+      <h3 class="text-uppercase text-weight-normalize layout-margin-tb">Notes &amp; Terms</h3><br>
+
+      <div class="input-container layout-margin-b">
+        <label for="">Estimate Notes</label>
+        <textarea class="col-75" maxlength="200" ng-model="notes" onkeyup="auto_grow(this)"></textarea>
+      </div>
+      <div class="input-container layout-margin-b">
+        <label for="">Terms &amp; Conditions</label>
+        <textarea class="col-75" maxlength="1000" ng-model="terms" onkeyup="auto_grow(this)"></textarea>
+      </div>
+
+
+      <div class="clearfix spacer"></div>
+      <button class="button button-info text-uppercase" ng-click="save()">Save</button>
+    </form>
+    <div class="clearfix spacer"></div>
+
+  <div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

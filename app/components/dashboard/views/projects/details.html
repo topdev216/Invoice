@@ -1,0 +1,561 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  <div class="container hidesm">
+    <a ui-sref="dashboard.projects.all" class="button-icon float-left layout-margin-t">
+      <img src="./assets/images/icon-back.png" alt="Kappa" class="layout-margin-r">
+    </a>
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-t">{{project.projectName}}</h3>
+    <div class="actions float-right layout-margin-tb" uib-dropdown>
+      <a ui-sref="dashboard.projects.edit({projectId:project.id})" class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a>
+      <a href="javascript:" ng-click="addToInvoice()" ng-hide="project.billingMethod == 'None'" class="button button-small button-info text-uppercase layout-margin-r">Convert to Invoice</a>
+      <button class="button button-small button-neutral text-uppercase" uib-dropdown-toggle>More <img src="./assets/images/dropdown-arrow-w.png" alt="">
+          </button>
+        <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+          <li><a ui-sref="dashboard.projects.clone({projectId:project.id})">Clone</a></li>
+          <li class="modal-opener" data-toggle="new-timesheet"><a ng-click="prepareToAddTimesheet()" href="javascript:">Add Timesheet</a></li>
+          <li class="modal-opener" data-toggle="new-task"><a ng-click="prepareToAddTask()" href="javascript:">Add Tasks</a></li>
+          <li class="modal-opener" data-toggle="add-user"><a ng-click="prepareToAddUser()" href="javascript:">Add User</a></li>
+          <li><a href="javascript:" ng-click="deleteProjectClicked()">Delete</a></li>
+            <!--
+          <li class="modal-opener" data-toggle="view-more"><a onclick="return false;" href="">View More</a></li>
+-->
+        </ul>
+      
+    </div>
+    <div class="clearfix"></div>
+    <hr class="layout-margin-b">
+
+    <div class="col-60">
+      <h3 class="layout-margin-tb text-uppercase text-weight-normalize">Project Details</h3>
+      <div class="container">
+          <p class="layout-no-padding layout-no-margin col-40">Customer Name</p>
+          <p class="layout-no-padding layout-no-margin col-60">{{customer.attributes.displayName}}</p><br>
+          <p class="layout-no-padding layout-no-margin col-40">Description</p>
+          <p class="layout-no-padding layout-no-margin col-60" style="word-break: break-word;">{{project.projectDescription}} <br></p>
+          <p class="layout-no-padding layout-no-margin col-40">Billing Method</p>
+  
+          
+          
+          
+          
+          
+          
+          
+          <p class="layout-no-padding layout-no-margin col-60">{{project.billingMethod}}</p>
+      </div>
+
+      <div class="clearfix"></div><br>
+
+      <h3 class="layout-margin-tb text-uppercase text-weight-normalize">Logged Hours</h3>
+      <div class="container">
+        <p class="layout-no-padding layout-no-margin col-40">Hours worked</p>
+        <p class="layout-no-padding layout-no-margin col-60">{{billableHours}}</p>
+      </div>
+
+      <div class="clearfix"></div><br>
+
+      <h3 class="layout-margin-tb text-uppercase text-weight-normalize">Total</h3>
+      <div class="container">
+        <p class="layout-no-padding layout-no-margin col-40">Billable Hours</p>
+        <p class="layout-no-padding layout-no-margin col-60 text-info">{{billableHours}}</p>
+
+        <p class="layout-no-padding layout-no-margin col-40">Billed Hours</p>
+        <p class="layout-no-padding layout-no-margin col-60 text-positive">{{billedHours}}</p>
+
+        <p class="layout-no-padding layout-no-margin col-40">Unbilled Hours</p>
+        <p class="layout-no-padding layout-no-margin col-60 text-danger">{{unbilledHours}}</p>
+      </div>
+
+    </div>
+
+    <div class="col-40">
+      <h3 class="layout-margin-tb text-uppercase text-weight-normalize">Project Snapshot</h3>
+        <canvas id="projectchart" height="291px" width="428px"></canvas>
+        <!--
+      <img src="./assets/images/graph4.png" alt="">
+        -->
+    </div>
+
+    <div class="clearfix spacer"></div>
+
+    <ul class="tabs tabs-100 container clearfix col-no-padding">
+      <li class="text-center col-no-padding active" data-toggle="timesheet">
+        <h4 class="text-transform text-uppercase text-weight-normalize">Timesheet</h4></li>
+      <li class="text-center col-no-padding" data-toggle="tasks">
+        <h4 class="text-transform text-uppercase text-weight-normalize">Tasks</h4></li>
+      <li class="text-center col-no-padding" data-toggle="users">
+        <h4 class="text-transform text-uppercase text-weight-normalize">Users</h4></li>
+    </ul>
+    <div class="tab active" data-name="timesheet">
+
+      <div class="container-table">
+        <div class="thead">
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize">Date</p>
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize">Task</p>
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize">User</p>
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize text-center">Time</p>
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize text-right">Status</p>
+        </div>
+        <div class="table-row row-border" ng-repeat="sheet in timesheets">
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize">{{(sheet.attributes.date.getMonth()+1) + '/' + sheet.attributes.date.getDate() + '/' + sheet.attributes.date.getFullYear()}}</p>
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize">{{sheet.attributes.task.attributes.taskName}}</p>
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize">{{sheet.attributes.user.attributes.userName}}</p>
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize text-center">{{sheet.time}}</p>
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize text-right text-danger" ng-hide="sheet.attributes.isBilled">Unbilled</p>
+          <p class="col-20 layout-margin-t text-color-light text-weight-normalize text-right text-positive" ng-show="sheet.attributes.isBilled">Billed</p>
+          <p class="col-100 layout-margin-tb layout-padding-l">
+            {{sheet.attributes.notes}}
+          </p>
+        </div>
+      </div>
+
+    </div>
+    <div class="tab" data-name="tasks">
+      <div class="container-table">
+        <div class="thead">
+          <p class="col-20 task text-uppercase text-color-normalize text-weight-normalize">Name</p>
+          <p class="col-20 task text-uppercase text-color-normalize text-weight-normalize text-center">Logged Hours</p>
+          <p class="col-20 task text-uppercase text-color-normalize text-weight-normalize text-center">Billed Hours</p>
+          <p class="col-20 task text-uppercase text-color-normalize text-weight-normalize text-center">Unbilled Hours</p>
+                     
+          <p ng-show="project.billingMethod == 'Based on task hours'" class="col-20 text-uppercase text-color-normalize text-weight-normalize text-right">Price</p>
+          
+        </div>
+        <div class="table-row row-border" ng-repeat="task in tasks">
+          <p class="col-20 task text-color-light text-weight-normalize" ng-class="{'tasks-detail': project.billingMethod != 'Based on task hours'}">{{task.entity.taskName}}</p>
+
+          <p class="col-20 task text-color-light text-weight-normalize text-center" ng-class="{'tasks-detail': project.billingMethod != 'Based on task hours'}">{{task.loggedTime}}</p>
+          <p class="col-20 task text-color-light text-weight-normalize text-center" ng-class="{'tasks-detail': project.billingMethod != 'Based on task hours'}">{{task.billedTime}}</p>
+          <p class="col-20 task text-color-light text-weight-normalize text-center" ng-class="{'tasks-detail': project.billingMethod != 'Based on task hours'}">{{task.unbilledTime}}</p>
+
+          <p ng-show="project.billingMethod == 'Based on task hours'" class="col-20 text-color-light text-weight-normalize text-right">{{'$' + (task.entity.taskCost.toFixed(2) || '0.00')}}</p>
+        
+        </div>
+      </div>
+    </div>
+    <div class="tab" data-name="users">
+      <div class="container-table">
+        <div class="thead">
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize">Name</p>
+          <p class="col-25 text-uppercase text-color-normalize text-weight-normalize">Email</p>
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize text-center">Logged Hours</p>
+            
+          <p ng-show="project.billingMethod == 'Based on staff hours'" class="col-15 text-uppercase text-color-normalize text-weight-normalize text-center">Unbilled Hours</p>
+        <!--  <p class="col-15 text-uppercase text-color-normalize text-weight-normalize text-center">Billed Hours</p>
+-->
+          <p class="col-20 text-uppercase text-color-normalize text-weight-normalize text-right">Role</p>
+        </div>
+        <div class="table-row row-border" ng-repeat="user in staff">
+          <p class="col-20 text-color-light text-weight-normalize">{{user.user.attributes.userName}}</p>
+          <p class="col-25 text-color-light text-weight-normalize" style="word-break: break-all;">{{user.user.attributes.emailID}}</p>
+          <p class="col-20 text-color-light text-weight-normalize text-center">{{user.loggedTime}}</p>
+            
+          <p ng-show="project.billingMethod == 'Based on staff hours'" class="col-15 text-color-light text-weight-normalize text-center">{{user.unbilledTime}}</p>
+         <!-- <p class="col-15 text-color-light text-weight-normalize text-center"></p>
+-->
+          <p class="col-20 text-color-light text-weight-normalize text-right">{{user.user.attributes.role}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="clearfix spacer hidesm"></div>
+
+  <div class="popup-modal view-more hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">View More</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+
+        <table class="table-border-tb">
+          <tr class="thead">
+            <td class="layout-padding text-info text-uppercase">Time Spent</td>
+            <td class="layout-padding text-info text-uppercase">User</td>
+            <td class="layout-padding text-info text-uppercase text-left">Task</td>
+          </tr>
+          <tr class="trow">
+            <td class="layout-padding text-color-light text-weight-normalize">01:55</td>
+            <td class="layout-padding text-color-light text-weight-normalize">John Doe</td>
+            <td class="layout-padding text-color-light text-weight-normalize text-left">Research</td>
+          </tr>
+          <tr class="trow">
+            <td class="layout-padding text-color-light text-weight-normalize">01:55</td>
+            <td class="layout-padding text-color-light text-weight-normalize">John Doe</td>
+            <td class="layout-padding text-color-light text-weight-normalize text-left">Research</td>
+          </tr>
+        </table>
+      </div>
+      <div class="clearfix spacer"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r">Done</button>
+    </div>
+  </div>
+
+  <div class="popup-modal new-task hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">New Task</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addTaskForm" class="layout-margin-tb inputs-white">
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Task Name</label>
+            <input class="col-75" name="newTaskName" ng-model="newTaskName" placeholder="Type to add">
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Description</label>
+            <textarea ng-model="newTaskDescription" style="resize: none;" class="col-75"></textarea>
+          </div>
+            
+        <div class="input-container layout-margin-b" ng-show="project.billingMethod == 'Based on task hours'">
+            <label class="layout-padding-t-sm">Rate/Hour</label>
+            <input class="col-75" onkeypress="numberValidation(event)" name="newTaskCost" type="number" ng-model="newTaskCost" placeholder="Type to add">
+          </div>
+
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r" ng-click="addNewTask()">Save</button>
+    </div>
+  </div>
+
+<div class="popup-modal add-user hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Add User</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addUserForm" class="inputs-white" novalidate>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Select User</label>
+              <select class="col-75" name="newUser" ng-change="userChanged()" ng-model="newUser" placeholder="Select User" ng-options="user.userName for user in users">
+                  <option value="" disabled>Select User</option>
+              </select>
+          </div>
+            
+        <div class="input-container layout-margin-b" ng-show="project.billingMethod == 'Based on staff hours'">
+            <label class="layout-padding-t-sm">Rate/Hour</label>
+            <input class="col-75" onkeypress="numberValidation(event)" name="staffHours" type="number" ng-model="staffHours" placeholder="Type to add">
+          </div>
+
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r" ng-click="addNewUser()">Add</button>
+    </div>
+  </div>
+
+<div class="popup-modal new-timesheet hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">New Timesheet</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form action="" name="addTimesheetForm" id="addTimesheetForm" class="layout-margin-tb inputs-white" novalidate>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Date</label>
+              <input class="col-75" type="text" readonly
+          uib-datepicker-popup="{{dateFormat}}" name="timesheetDate" ng-model="timesheetDate" is-open="openPicker1" datepicker-options="dateOptions" ng-click="openDatePicker(1)"/>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Time Spent</label>
+            <input class="col-35" type="Number" placeholder="HH" name="timesheetHours" ng-model="timesheetHours">
+            <input class="col-35 pull-right" type="Number" placeholder="MM" name="timesheetMinutes" ng-model="timesheetMinutes">
+              <!--
+            <span class="col-75 pull-right layout-margin-tb"><a href="#">Switch to Time Duration</a></span>
+            -->
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">User</label>
+              
+              
+            <select class="col-75" name="timesheetUser" ng-change="timeSheetUserChanged()" ng-model="timesheetUser" placeholder="Select User" ng-options="user.user.attributes.title for user in staff">
+                  <option value="" disabled>Select User</option>
+              </select>
+<!--
+            <select class="col-75" name="timesheetUser" ng-change="timeSheetUserChanged()" ng-model="timesheetUser" placeholder="Select User" ng-options="user.userName for user in users">
+                  <option value="" disabled>Select User</option>
+              </select>
+-->
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Task</label>
+            <select class="col-75" name="timeSheetTask" ng-change="taskChanged()" ng-model="timesheetTask" ng-options="task.entity.taskName for task in tasks">
+              <option value="" disabled>Select task</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Notes</label>
+            <textarea class="col-75" ng-model="timesheetDescription"></textarea>
+          </div>
+
+
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r" ng-click="saveTimesheet()">Save</button>
+        <!--
+      <button class="button button-small button-neutral text-uppercase">Start Timer</button>
+        -->
+    </div>
+  </div>
+
+<div class="popup-modal convert-invoice hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Project Invoice Info</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form action="" name="InvoiceInfo" id="InvoiceInfo" class="layout-margin-tb inputs-white" novalidate>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Bill Up To</label>
+              <input class="col-75" type="text" readonly
+          uib-datepicker-popup="{{dateFormat}}" name="invoiceDate" ng-model="invoiceDate" is-open="openPicker2" datepicker-options="dateOptions" ng-click="openDatePicker(2)"/>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">How to sort data on invoice</label>
+              
+            <select class="col-75" name="timesheetUser" ng-model="dataOnInvoice">
+                  <option value="1">Single line for Project</option>
+                  <option ng-hide="project.billingMethod == 'Fixed cost for project' || project.billingMethod == 'Based on staff hours'" value="2">Line for each task</option>
+                  <option ng-hide="project.billingMethod == 'Fixed cost for project'" value="3">Line for each timesheet</option>
+                  <option ng-hide="project.billingMethod == 'Fixed cost for project' || project.billingMethod == 'Based on task hours'" value="4">Line for each user</option>
+                  <!--<option value="4">Line for each user</option>-->
+              </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Show in Item Name</label>
+            <select class="col-75" name="itemName" ng-model="itemName" >
+              <option value="1">Project Name</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r" ng-click="SavetoInvoice()">Save</button>
+        <!--
+      <button class="button button-small button-neutral text-uppercase">Start Timer</button>
+        -->
+    </div>
+  </div>
+
+<div class="popup-modal confirmation-pop-up hidesm">
+    <div class="modal container" style="width: 650px !important;">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Confirm</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center" style="margin-bottom: 20px; margin-top: 20px; margin-left: -15px;">
+        <label style="font-size: 23px;">Are you sure you want to delete this project?</label>
+      </div>
+      <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+      <button class="button button-small button-default text-uppercase modal-close float-right"
+        ng-click="">Cancel</button>
+      <button style="margin-right: 15px;margin-bottom: 20px;" class="button button-danger text-uppercase float-right" ng-click="deleteProject()">Delete</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+<!--
+  <div class="popup-modal new-timesheet hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">New Timesheet</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form action="" class="layout-margin-tb inputs-white">
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Date</label>
+            <select class="col-75">
+              <option value="null" disabled selected>Select or Type to add</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Time Spent</label>
+            <input class="col-35" type="text" placeholder="Start Time">
+            <input class="col-35 pull-right" type="text" class="End Time">
+            <span class="col-75 pull-right layout-margin-tb"><a href="#">Switch to Time Duration</a></span>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">User</label>
+            <select class="col-75">
+              <option value="null" disabled selected>Select User</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Project</label>
+            <select class="col-75">
+              <option value="null" disabled selected>Select project</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Task</label>
+            <select class="col-75">
+              <option value="null" disabled selected>Select task</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Notes</label>
+            <textarea class="col-75"></textarea>
+          </div>
+
+
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r">Save</button>
+      <button class="button button-small button-neutral text-uppercase">Start Timer</button>
+    </div>
+  </div>
+
+  <div class="popup-modal edit-timesheet hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Edit Timesheet</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form action="" class="layout-margin-tb inputs-white">
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Date</label>
+            <select class="col-75">
+              <option value="option1">12/03/2014</option>
+              <option value="option2">Option #2</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Time Spent</label>
+            <input class="col-35" type="text" value="9:00 AM">
+            <input class="col-35 pull-right" type="text" value="10:55 AM">
+            <span class="col-75 pull-right layout-margin-tb"><a href="#">Switch to Time Duration</a></span>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">User</label>
+            <select class="col-75">
+              <option value="option1">John</option>
+              <option value="option2">Option #2</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Project</label>
+            <select class="col-75">
+              <option value="option1">Lorem Ipsum</option>
+              <option value="option2">Option #2</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Task</label>
+            <select class="col-75">
+              <option value="null" disabled selected>Select task</option>
+            </select>
+          </div>
+
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Notes</label>
+            <textarea class="col-75">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda dicta tempora perspiciatis ducimus ipsam.</textarea>
+          </div>
+
+
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase layout-margin-r">Save</button>
+      <button class="button button-small button-neutral text-uppercase">Start Timer</button>
+    </div>
+  </div>
+-->
+
+<!--
+  <div class="popup-modal new-user hidesm">
+      <div class="modal container">
+
+        <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">New User</h3>
+        <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+        <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+
+        <div class="col-80 text-left layout-center">
+          <form action="" class="layout-margin-tb inputs-white">
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Task Name</label>
+              <input class="col-75" placeholder="Select or Type to add">
+            </div>
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Logged Hours</label>
+              <input class="col-75" type="text" placeholder="HH:MM">
+            </div>
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Billed Hours</label>
+              <input class="col-75" type="text" placeholder="HH:MM">
+            </div>
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Unbilled Hours</label>
+              <input class="col-75" type="text" placeholder="HH:MM">
+            </div>
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Price</label>
+              <input class="col-75" type="text" placeholder="Type to add">
+            </div>
+
+            <div class="input-container layout-margin-b">
+              <label class="layout-padding-t-sm">Notes</label>
+              <textarea class="col-75"></textarea>
+            </div>
+
+          </form>
+        </div>
+        <div class="clearfix"></div>
+        <button class="button button-small button-info text-uppercase layout-margin-r">Save</button>
+      </div>
+    </div>
+-->
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

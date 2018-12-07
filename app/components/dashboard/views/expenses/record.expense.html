@@ -1,0 +1,86 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  <div class="container hidesm">
+
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-tb">New Expense</h3>
+    <div class="clearfix"></div>
+    <hr>
+
+    <form id="addExpenseForm" class="inputs-white layout-margin-tb">
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Category Name</label>
+        <select name="expCategory" class="col-70" ng-model="selectedCategory"
+          ng-options="category.entity.name for category in categories">
+          <option value="" disabled>Select category name</option>
+        </select>
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Date</label>
+        <input name="date" class="col-70" type="text" uib-datepicker-popup="{{dateFormat}}"
+          placeholder="Select or enter date" ng-model="todayDate" is-open="openPicker1"
+          ng-click="openDatePicker(1)" datepicker-options="dateOptions" readonly>
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Amount</label>
+          
+        <input maxlength="60" name="amount" type="number" class="col-70" onkeypress="numberValidation(event)" placeholder="USD" ng-model="amount">
+      
+        </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Tax</label>
+        <select class="col-70" ng-model="selectedTax" ng-options="tax.name for tax in taxes">
+          <option value="">None</option>
+        </select>
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Reference#</label>
+        <input maxlength="60" class="col-70" type="text" ng-model="refNumber">
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Notes</label>
+        <textarea class="col-70" ng-model="notes">Lorem Ipsum</textarea>
+      </div>
+      <div class="input-container col-60 layout-margin-b">
+        <label class="col-30 layout-padding-t-sm">Customer Name</label>
+        <select name="customer" class="col-70 can-create-customer" ng-model="selectedCustomer" ng-change="customerSelected()"
+          ng-options="customer.fullName for customer in customers">
+          <option value="">Select customer</option>
+        </select>
+      </div>
+      <div class="input-container col-60 layout-margin-b" ng-show="selectedCustomer">
+        <label class="col-30 layout-padding-t-sm">Expense Type</label>
+        <select class="col-70" ng-model="expenseType.selectedType"
+          ng-options="type.name for type in expenseType.types track by type.value">
+        </select>
+      </div>
+
+      <div class="input-container layout-margin-tb col-60">
+        <label class="col-i-20">Attachments</label>
+        <div class="col-70 file_div" >
+        <div ng-repeat="file in files">
+          <label class="col-90">{{file.fileName1}}</label>
+          <button class="button button-icon button-no-margin" ng-click="removeFile($index)">
+          <img src="./assets/images/icon-times-round.png" alt=""></button>
+          <div class="clearfix"></div>
+          <br/>
+        </div>
+        <label>
+          <input type="file" style="display: none;"
+            onchange="angular.element(this).scope().addNewFile(this)" accept=".pdf,.png,.jpg,.jpeg">
+          <div class="button button-no-bg" style="margin-left: 5px">+ Add</div>
+        </label>
+        </div>
+      </div>
+
+      <div class="clearfix spacer"></div>
+    </form>
+
+    <button class="button layout-margin-r text-uppercase button-info" ng-click="saveNewExpense()">Save</button>
+    <button class="button layout-margin-r text-uppercase button-neutral" ng-click="cancel()">Cancel</button>
+
+    <div class="clearfix spacer"></div>
+
+    <div class="spacer"></div>
+
+  </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

@@ -1,0 +1,85 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>    
+  <div class="container hidesm">
+    <a ui-sref="dashboard.expenses.all" class="button-icon float-left layout-margin-t">
+      <img src="./assets/images/icon-back.png" alt="Kappa" class="layout-margin-r">
+    </a>
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-t">
+      {{expense.entity.category}}</h3>
+    <div class="actions float-right layout-margin-tb" uib-dropdown>
+    
+      <a ui-sref="dashboard.expenses.edit({expenseId:expense.entity.id})"
+        class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a>
+      <a ui-sref="dashboard.sales.invoices.new({expenseId:expense.entity.id, customerId:expense.customer.id})"
+        class="button button-small button-info text-uppercase layout-margin-r"
+        ng-show="expense.entity.status == 'Billable'">Convert to Invoice</a>
+      
+      <button class="button button-small button-neutral text-uppercase" uib-dropdown-toggle>More 
+        <img src="./assets/images/dropdown-arrow-w.png" alt="">
+      </button>
+      <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+        <!--<li><a href="">Make Recurring</a></li>-->
+        <li><a href="" ng-click="cloneExpense(expense.entity.id)">Clone</a></li>
+        <li><a href="" ng-click="deleteExpense()">Delete</a></li>
+      </ul>
+    </div>
+    
+    <div class="clearfix spacer"></div>
+
+    <h3 class="layout-margin-b text-uppercase text-weight-normalize">Expense Details</h3>
+    <div class="container">
+      <p class="col-25 layout-no-margin layout-no-padding text-weght-normalize">Category Name</p>
+      <p class="col-40 layout-no-margin layout-no-padding text-weght-normalize">{{expense.entity.category}}</p>
+    </div>
+    <div class="container float-left">
+      <p class="col-25 layout-no-margin layout-no-padding text-weght-normalize">Customer Name</p>
+      <p class="col-40 layout-no-margin layout-no-padding text-weght-normalize">{{expense.customer.displayName}}</p>
+    </div>
+    <div class="container float-left">
+      <p class="col-25 layout-no-margin layout-no-padding text-weight normalize">Ref#</p>
+      <p class="col-40 layout-no-margin layout-no-padding text-weight normalize">{{expense.entity.referenceNumber}}</p>
+    </div>
+    <div class="container float-left">
+      <p class="col-25 layout-no-margin layout-no-padding text-weight normalize">Notes</p>
+      <p class="col-40 layout-no-margin layout-no-padding text-weight normalize">{{expense.entity.notes}}</p>
+    </div>
+
+    <div class="clearfix spacer"></div>
+
+    <div class="container float-left">
+      <h3 class="layout-no-margin text-uppercase text-weight-normalize">Expense Amount</h3><br/>
+      <div class="col-25">
+        <h2 class="text-danger text-weight-normalize layout-no-margin">{{expense.amount}}</h2>
+        <p class="layout-no-margin layout-no-padding">{{expense.entity.status}}</p>
+      </div>
+      <p class="col-40 layout-no-margin layout-no-padding">{{expense.date}}</p>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <!--
+    <div class="border-box drag-n-drop">
+      <button class="button button-ghost">Attach Receipt</button>
+      <h3 class="text-color-normalize text-uppercase">Or <br/> Drag and drop file here</h3>
+    </div>
+    -->
+
+    <h3 class="layout-margin-t section-title text-uppercase text-color-normalize float-left">Attachments</h3>
+    <label>
+      <input type="file" style="display: none;"
+        onchange="angular.element(this).scope().addAttachment(this)">
+      <div class="layout-margin-t button button-no-bg float-right">+ Add</div>
+    </label>
+
+    <div class="clearfix"></div>
+
+    <table class="container table-border-tb layout-margin-tb-lg">
+      <tr class="text-uppercase text-color-normalize">
+        <td class="layout-padding-tb text-uppercase">Name</td>
+      </tr>
+      <tr class="text-color-light" ng-repeat="attach in attachments">
+        <td class="layout-padding-tb-lg valign-top"><a ng-href="{{attach.fileUrl}}" target="_blank">{{attach.fileName1}}</a></td>
+      </tr>
+    </table>
+
+  </div>
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

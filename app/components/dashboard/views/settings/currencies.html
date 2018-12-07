@@ -1,0 +1,181 @@
+  <header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  <div class="container hidesm">
+    <h3 class="layout-margin-t section-title float-left">Currencies</h3>
+    <a href="" class="float-right layout-margin-tb button button-add text-transform modal-opener"
+      data-toggle="new-currency" ng-click="prepareAddCurrency()">New</a>
+    <form class="float-right layout-margin-tb">
+<input type="text" class="search-bar layout-margin-r" placeholder="Search" ng-model="searchText" ng-change = "search()">
+    </form>
+
+    <table class="table-border-tb show_table_hover" style = "margin-bottom: 20px;">
+      <tr style="cursor : pointer" class="thead">
+        <td ng-click = "sortByCurencyName()"class="text-uppercase text-info layout-padding">Name<span><img id="name" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="nameUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></td>
+        <td ng-click = "sortBySymbol()" class="text-uppercase text-info layout-padding">Symbol<span><img id="symbol" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="symbolUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></td>
+        <td ng-click = "sortByExchangeRate()" class="text-uppercase text-info layout-padding">Exchange Rate<span><img id="exrate" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="exrateUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></td>
+        
+        <td class="is-active-head"></td>
+        <td class="text-uppercase text-info layout-padding text-right"></td>
+      </tr>
+      <tr class="trow" ng-repeat="currency in currencies">
+        <td ng-click="prepareEditCurrency($index)"
+          class="text-color-light text-weight-normalize layout-padding">{{currency.entity.title}}</td>
+        <td ng-click="prepareEditCurrency($index)"
+          class="text-color-light text-weight-normalize layout-padding">{{currency.entity.currencySymbol}}</td>
+        <td ng-click="prepareEditCurrency($index)"
+          class="text-color-light text-weight-normalize layout-padding">{{currency.entity.exchangeRate}}</td>
+       
+        <td ng-click="prepareEditCurrency($index)" 
+          class="is-active no"><img src="./assets/images/icon-tick-circle.png" ng-show="defaultCurrencyIndex == $index" alt=""></td>
+        <td class="text-color-light text-weight-normalize layout-padding text-right" ng-click="deleteCurrencyClicked($index)"><img src="./assets/images/icon-times-round.png" alt="" /></td>
+      </tr>
+    </table>
+
+  </div>
+
+
+  <div class="popup-modal new-currency hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Add Currency</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addCurrencyForm" class="layout-margin-tb col-100 inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Currency Code</label>
+            <select name="currencyCode" class="col-75" ng-options="currency for currency in availableCurrencies"
+              ng-model="currencyObj.title" ng-change="currencyChanged()">
+              <option value="" disabled selected>Select Currency Code</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Currency Symbol</label>
+            <input name="currencySymbol" type="text" class="col-75" placeholder="Type to add"
+              ng-model="currencyObj.currencySymbol">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Decimal Places</label>
+            <select class="col-75" ng-model="currencyObj.decimalPlace">
+              <option value="0">0</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Format</label>
+            <select class="col-75" ng-model="currencyObj.format">
+              <option value="#,###,####">1,234,5678</option>
+              <option value="###,###,###">123,456,789</option>
+              <option value="##,##,##,##">12,34,56,78</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Exchange Rate</label>
+            <input name="exchangeRate" ng-model="currencyObj.exchangeRate" type="number" class="col-75" onkeypress="numberValidation(event)"
+              placeholder="Type to add">
+          </div>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase" ng-click="saveNewCurrency()">Save</button>
+    </div>
+  </div>
+
+  <div class="popup-modal edit-currency hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Edit Currency</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="editCurrencyForm" class="layout-margin-tb col-100 inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Currency Code</label>
+            <select name="currencyCode" class="col-75" ng-options="currency for currency in availableCurrencies"
+              ng-model="currencyObj.title" ng-change="currencyChanged()">
+              <option value="" disabled selected>Select or Type to add</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Currency Symbol</label>
+            <input maxlength="60" name="currencySymbol" type="text" class="col-75" placeholder="Type to add"
+              ng-model="currencyObj.currencySymbol">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Decimal Places</label>
+            <select class="col-75" ng-model="currencyObj.decimalPlace">
+              <option value="0">0</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Format</label>
+            <select class="col-75" ng-model="currencyObj.format">
+              <option value="#,###,####">1,234,5678</option>
+              <option value="###,###,###">123,456,789</option>
+              <option value="##,##,##,##">12,34,56,78</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-smm">Exchange Rate</label>
+            <input maxlength="60" name="exchangeRate" type="number" onkeypress="numberValidation(event)" class="col-75" placeholder="Type to add"
+              ng-model="currencyObj.exchangeRate">
+          </div>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase float-left" ng-click="saveEditedCurrency()">Save</button>
+      <button class="button button-danger text-uppercase float-right" ng-click="deleteCurrency()">Delete</button>
+      <button class="button button-neutral text-uppercase float-right layout-margin-r"
+        ng-click="setDefaultCurrency()" ng-show="selectedIndex != defaultCurrencyIndex">Set as Default</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+  <div class="popup-modal cannot-delete hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">You cannot delete your default currency.</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+      <button class="button button-info text-uppercase modal-close">OK</button>
+    </div>
+  </div>
+  <div class="popup-modal add-exchangeRate hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Please save currency with Exchange Rate provided, then try again.</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+      <button class="button button-info text-uppercase modal-close">OK</button>
+    </div>
+  </div>
+
+<div class="popup-modal delete-currency hidesm">
+    <div class="modal container" style="width: 650px !important;">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Delete Currency</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center" style="margin-bottom: 20px; margin-top: 20px; margin-left: -15px;">
+        <label>Are you sure want to delete this Currency?</label>
+      </div>
+      <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+      <button class="button button-small button-default text-uppercase modal-close float-right"
+        ng-click="">Cancel</button>
+      <button style="margin-right: 15px;" class="button button-small button-danger text-uppercase float-right" ng-click="confirmDeleteCurrency()">Delete</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

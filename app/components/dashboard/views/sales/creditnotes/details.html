@@ -1,0 +1,620 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+
+  <div class="container hidesm">
+    <a ui-sref="dashboard.sales.creditnotes.all" class="button-icon float-left">
+      <img src="./assets/images/icon-back.png" alt="Kappa">
+    </a>
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-tb">{{creditNo}}</h3>
+    <div class="actions float-right layout-margin-tb" uib-dropdown>
+      <a ng-show="isOwner" ui-sref="dashboard.sales.creditnotes.edit({creditNoteId:creditNote.entity.id})"
+        class="button button-small button-neutral text-uppercase layout-margin-r">Edit</a>
+      <button class="button button-small button-neutral text-uppercase" uib-dropdown-toggle>More <img src="./assets/images/dropdown-arrow-w.png" alt="">
+      </button>
+      <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+        <li><a href="" ng-click="emailReceipt()">Send as Email</a></li>
+          <li><a href="" ng-click="textReceipt()">Send as Text</a></li>
+          <li class="modal-opener" data-toggle="record-payment" ng-if="creditNote.entity.remainingCredits > 0"><a href=""
+              ng-click="prepareAddPayment()">Add Refund</a></li>
+		  <li><a href="javascript:" ng-click="downloadInvoice()">Download PDF</a></li>
+        <li><a ng-href="{{templateUrl}}" target="_blank" ng-click="creditNotePrinted()">Print</a></li>
+      </ul>
+    </div>
+    <div class="clearfix"></div>
+    <hr>
+
+    <div ng-repeat="comment in comments">
+      <p class="log text-color-light text-weight-normalize">{{comment.date}} <span>
+        {{comment.entity.comment}} - {{comment.entity.name}}</span></p>
+    </div>
+    <a href="" class="layout-margin-tb modal-opener" data-toggle="add-comment">+ New Comment</a>
+
+    <div class="text-center layout-margin-tb">
+      <iframe id="creditFrame" name="targetframe"
+        width="1050px" height="600px" frameborder="1" >
+      </iframe>
+      <!-- <img src="./assets/images/invoiced.png" alt=""> -->
+    </div>
+
+    <!--
+    <p class="layout-no-padding text-center">
+      Template: 'Standard Template' - <a ng-click="changeTemplate()">Change</a>
+    </p>
+    -->
+
+    <div class="popup-modal change-template hidesm">
+      <div class="modal container">
+        <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize
+          float-left">Select Template</h3>
+        <button class="button button-icon float-right modal-close button-no-margin">
+          <img src="./assets/images/icon-times.png" alt=""></button>
+        <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+        
+        <div class="col-80 layout-center">
+        <div class="col-30" ng-repeat="template in templates">
+          <img ng-src="{{template.url}}" alt="">
+          <p>{{template.name}}</p>
+          <div class="text-center">
+            <button class="button button-info text-uppercase"
+              ng-click="setDefaultTemplate($index)">Set as Default</button>
+          </div>
+        </div>
+      </div>
+
+        <div class="clearfix"></div>
+      </div>
+    </div>
+      
+      <div class="clearfix"></div>
+
+    <h3 class="layout-margin-t section-title text-uppercase text-color-normalize">Refund History</h3>
+
+    <div class="container container-table layout-margin-t">
+      <div class="thead layout-padding">
+        <div class="col-15">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Date</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Payment</h3>
+        </div>
+        <div class="col-20 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Reference #</h3>
+        </div>
+        <div class="col-25 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Refund Mode</h3>
+        </div>
+        <div class="col-15 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize">Amount</h3>
+        </div>
+        <div class="col-10 layout-padding-l">
+          <h3 class="text-weight-normalize layout-no-margin text-uppercase text-color-normalize"></h3>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="tbody no-border inputs-white modal-opener" ng-repeat="payment in payments" data-toggle="refund-payment"
+        ng-click="showPaymentDetail($index)">
+
+        <div class="table-row row-border">
+          <div class="col-15">
+            <p class="layout-margin-tb">{{payment.date}}</p>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <p class="layout-margin-tb text-color-light">{{$index+1}}</p>
+          </div>
+          <div class="col-20 layout-padding-l">
+            <p class="layout-margin-tb">{{payment.entity.reference}} 
+              <!--<label ng-show="payment.entity.deleted" class="col-20 text-danger">REFUNDED</label>-->
+            </p>
+          </div>
+          <div class="col-25 layout-padding-l">
+            <p class="layout-margin-tb">{{payment.entity.mode}}</p>
+          </div>
+          <div class="col-15 layout-padding-l">
+            <p class="layout-margin-tb">{{payment.amount}}</p>
+          </div>
+          <div ng-hide="true" class="col-10 layout-padding-l">
+            <button class="float-right button button-icon layout-margin-tb" style="font-size:20px">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></button>
+        <!-- <a href="#" class="float-right layout-margin-t action-edit">edit</a> -->
+          </div>
+          <div class="col-100 text-color-light layout-margin-b pull-top">
+            {{payment.entity.notes}}
+          </div>
+        </div>
+      </div>
+    </div>
+      
+<!--
+    <h3 class="layout-margin-t section-title text-uppercase text-color-normalize">Attachments</h3>
+
+    <table class="container table-border-tb layout-margin-tb-lg">
+      <tr class="text-uppercase text-color-normalize">
+        <td class="layout-padding-tb text-uppercase">Date</td>
+        <td class="layout-padding-tb text-uppercase">Invoice#</td>
+        <td class="layout-padding-tb text-uppercase">Amount Credited</td>
+        <td class="layout-padding-tb"></td>
+      </tr>
+      <tr class="text-color-light">
+        <td class="layout-padding-tb-lg valign-top">12/03/2014</td>
+        <td class="layout-padding-tb-lg valign-top">INV-000001</td>
+        <td class="layout-padding-tb-lg valign-top">Amount Credited</td>
+        <td class="layout-padding-tb-lg valign-top actions"><a href="#" class="action-edit">Edit</a> <button class="button button-icon button-no-margin"><img src="./assets/images/icon-times-round.png" alt=""></button></td>
+      </tr>
+    </table>
+-->
+    <div class="clearfix spacer"></div>
+
+  </div>
+
+  <div class="popup-modal convert-to-invoice hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Convert to Invoice</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <p class="layout-no-margin layout-no-padding col-100">Select which estimate fields you would like to keep on your invoice:</p>
+        <form action="" class="inputs-white layout-margin-t float-left">
+          <label class="input-container input-checkbox-container layout-margin-b">
+            <input type="checkbox">
+            <span class="checkbox float-left"></span>
+            <p>Customer Notes</p>
+          </label>
+          <label class="input-container input-checkbox-container layout-margin-b">
+            <input type="checkbox">
+            <span class="checkbox float-left"></span>
+            <p>Terms &amp; Conditions</p>
+          </label>
+          <label class="input-container input-checkbox-container layout-margin-b">
+            <input type="checkbox">
+            <span class="checkbox float-left"></span>
+            <p>Address</p>
+          </label>
+        </form>
+        <div class="clearfix"></div>
+        <br/>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase">Save</button>
+    </div>
+  </div>
+
+<div class="popup-modal record-payment hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Add Refund</h3>
+      <button class="button button-icon float-right modal-close button-no-margin"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="paymentForm" class="inputs-white layout-margin-t float-left">
+          <div class="input-container layout-margin-b">
+            <label>Date</label>
+            <input name="paymentDate" class="col-75" type="text" uib-datepicker-popup="{{dateFormat}}"
+              ng-model="paymentDate" is-open="openPicker1" datepicker-options="dateOptions" ng-click="openDatePicker(1)" readonly>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Amount</label>
+            <input name="paymentAmount" type="text" class="col-75"  onkeypress="numberValidation(event)" placeholder="Type to add"
+              ng-model="paymentAmount">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Reference #</label>
+            <input name="paymentRef" type="text" class="col-75" placeholder="Type to add"
+              ng-model="paymentRef">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Refund Mode</label>
+            <select name="paymentMode" class="col-75" placeholder="Select or Type to add"
+              ng-model="selectedPaymentMode" ng-options="mode for mode in paymentModes">
+              <option value="" disabled>Select Refund Mode</option>
+            </select>
+          </div>
+          <div class="input-container layout-margin-b">
+            <label>Notes</label>
+            <textarea class="col-75" ng-model="paymentNotes"></textarea>
+          </div>
+        </form>
+        <div class="clearfix"></div>
+        <br/>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase" ng-click="addPayment()">Save</button>
+    </div>
+  </div>
+
+  <div class="popup-modal add-comment hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-color-normalise text-weight-normalize
+        float-left">Add Comment</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+      <textarea ng-model="newComment"></textarea>
+      <br/>
+      <button class="button button-info text-uppercase" ng-click="addComment()">Save</button>
+    </div>
+  </div>
+
+<div class="popup-modal email-popup hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Email to</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addItemForm" class="layout-margin-tb col-100 inputs-white">
+            <div id="email-error" style="color: red; display: none;">
+                <label>Please select at least one email</label><br><br>
+            </div>
+           <table ng-show="contacts.length" class="table-border-tb" style = "margin-bottom: 20px;">
+               <tr class="trow show_hover" ng-repeat="contact in contacts">
+                   <td class="text-uppercase text-info layout-padding-tb-lg">
+                       <label class="input-container input-checkbox-container layout-margin-tb">
+                           <input type="checkbox" ng-model="contact.selected">
+                           <span class="checkbox float-left"></span>
+                       </label>
+                   </td>
+                   <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" style="width: 750px !important;">{{contact.contactName}}</td>
+               </tr>
+            </table>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase" ng-click="sendEmail()">Send</button>
+    </div>
+  </div>
+
+<div class="popup-modal text-popup hidesm">
+    <div class="modal container">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Text to</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addItemForm" class="layout-margin-tb col-100 inputs-white">
+            <div id="text-error" style="color: red; display: none;">
+            <label >Please select at least one phone number</label><br><br>
+            </div>
+            <table ng-show="mobileContacts.length" class="table-border-tb" style = "margin-bottom: 20px;">
+                
+                <tr class="trow show_hover" ng-repeat="contact in mobileContacts">
+                   <td class="text-uppercase text-info layout-padding-tb-lg">
+                     <label class="input-container input-checkbox-container layout-margin-tb">
+                       <input type="checkbox" ng-model="contact.selected">
+                       <span class="checkbox float-left"></span>
+                     </label>
+                   </td>
+                   <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" style="width: 750px !important;">{{contact.contactName}}</td>
+                 </tr>
+               </table>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-info text-uppercase" ng-click="sendText()">Send</button>
+    </div>
+  </div>
+
+<a href="#" id="pdfLink" title="CreditNote.pdf" download="CreditNote.pdf" style="display: none"></a>
+
+<div class='pdf-page' style="display: none;">
+    
+    <style type="text/css">
+    
+    /*@font-face{font-family:ff1;src:url(f1.woff)format("woff");}.ff1{font-family:ff1;line-height:0.996582;font-style:normal;font-weight:normal;visibility:visible;}*/
+    .ff1 {
+        font-family: Arial;
+        line-height: 0.996582;
+        font-style: normal;
+    }
+    .fc0 {
+        color: rgb(0,0,0);
+    }
+    .fc1 {
+        color: rgb(170,170,170);
+    }
+    .fc2 {
+        color: rgb(255,255,255);
+    }
+    .btm-line {
+        border-bottom: 1mm solid #aaa;
+    }
+    .top-line {
+        border-top: 1mm solid #aaa;
+    }
+    .invoice-item-title {
+        height: 10mm;
+        padding-left: 14pt;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+    .invoice-item-cost {
+        height: 10mm;
+        text-align: right;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+    .invoice-item-qty {
+        height: 10mm;
+        text-align: right;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+    a {
+			text-decoration: none;
+		}
+    </style>
+
+    <page id="page-container" backtop="0mm" backbottom="10mm" backleft="10mm" backright="15mm">
+		<div class="ff1 fc0 top-bar" 
+             style="position: relative;
+                    height: 10mm;
+                    white-space: pre;
+                    font-size: 30px;
+                    text-align: center;
+                    line-height: 10mm;" ><span id='pdf-title'>Payment Due   Apr 27, 2017</span></div>
+        <table cellspacing="0" 
+               style="width: 185mm;                   
+                      height: 122mm;
+                      /*position: absolute;*/
+                      top: 10mm;
+                      z-index: 10;
+                      table-layout: fixed">
+            <thead>
+                <td style="width: 26mm;"></td>
+                <td style="width: 32mm;"></td>
+                <td style="width: 30mm;"></td>
+                <td style="width: 30mm;"></td>
+                <td style="width: 30mm;"></td>
+                <td style="width: 30mm;"></td>
+            </thead>
+			
+			<tr class="top-bar">
+                <td colspan="6" class="btm-line top-bar"></td>
+            </tr>
+			<tr class="top-bar">
+                <td colspan="6" class="top-bar" style="height: 6mm;"></td>
+            </tr>
+			
+			<tr>
+				<td style="font-size: 18px;
+                           vertical-align: middle;
+						   border-right: 1px solid #000000;
+						   border-bottom: 1px solid #000000;
+						   text-align: left;
+						   padding-bottom: 25px;
+						   padding-left: 26px;"
+                    class="ff1 fc0" colspan="3"> <span style="font-size: 60px;" id="pdf-invoice-title"></span> <br>
+				
+					<span class="fc1" id="pdf-invoice-number"></span> <br>
+					
+					<table style="border-top: 5px solid #000000; margin-top: 5px; padding-top: 5px;">
+						<tr>
+							<td style="width: 25mm; text-align: left;" class="fc1">Total</td>
+							<td style="width: 30mm; text-align: center;" class="fc1">Date</td>
+							<td style="width: 20mm; text-align: right;" class="fc1">Currency</td>
+						</tr>
+						<tr>
+							<td style="text-align: left;" class="fc0" id="pdf-total-top"></td>
+							<td style="text-align: center;" class="fc0" id="pdf-date"></td>
+							<td style="text-align: right;" class="fc0" id="pdf-currency"></td>
+						</tr>
+					</table>
+				</td>
+				
+				<td style="vertical-align: middle;
+                           font-size: 18px;
+                           text-align: left;
+						   border-bottom: 1px solid #000000;
+						   padding-bottom: 10px;
+						   padding-top: 10px;
+						   padding-left: 26px;"
+                    class="ff1 fc0" colspan="3">
+					<span id="pdf-business-name">Business Name</span> <br> <br>
+					
+					<table>
+						<tr>
+							<td style="padding-bottom: 10px; width: 80mm;" id="pdf-address"></td>
+						</tr>
+						<tr>
+							<td style="padding-bottom: 10px; width: 80mm;" id="user-mail"></td>
+						</tr>
+						<tr>
+							<td style="padding-bottom: 10px;" id="user-phone"></td>
+						</tr>
+					</table>
+				</td>
+				
+			</tr>
+			
+			<tr>
+                <td style="border-right: 1px solid #000000;" colspan="3" style="height: 6mm;"></td>
+                <td colspan="3" style="height: 6mm;"></td>
+            </tr>
+			
+			<tr>
+                <td style="font-size: 18px;
+                           height: 5mm;
+                           vertical-align: bottom;
+						   border-right: 1px solid #000000;
+						   padding-left: 26px;"
+                    class="ff1 fc0" colspan="3"
+					>
+				<span id="pdf-notes-title1"></span> <br><br>
+					<span class="fc1" id="pdf-notes1"></span> <br>
+				</td>
+                
+                <td style="vertical-align: middle;
+                           font-size: 18px;
+                           text-align: left;
+                           height: 5mm;
+						   padding-left: 26px;"
+                    class="ff1 fc1" colspan="3">
+					<span>Bill to:</span> <br> <br>
+						<table>
+							<tr>
+								<td style="padding-bottom: 10px; width: 80mm;" class="fc0" id="client-name"></td>
+							</tr>
+							<tr>
+								<td style="padding-bottom: 10px; width: 80mm;" class="fc0" id="client-mail"></td>
+							</tr>
+						</table>
+					</td>
+            </tr>
+			
+			<tr>
+                <td style="border-right: 1px solid #000000;" colspan="3" style="height: 6mm;"></td>
+                <td colspan="3" style="height: 6mm;"></td>
+            </tr>
+			
+            <tr>
+                <td style="height: 6mm;"></td>
+            </tr>
+
+            <tr id="invoice-items-header">
+                
+            </tr>
+            
+            <tr id="invoice-subtotal">
+                <td colspan="3" class=""></td>
+                <td class="ff1 fc1 " colspan="2"
+                    style="vertical-align: middle;
+                           height: 11mm;
+                           font-size: 16px;">SUBTOTAL</td>
+                <td class="ff1 fc1 "
+                    style="height: 11mm;
+                           text-align: right;
+                           vertical-align: middle;
+                           font-size: 16px;"
+                    id="pdf-subtotal">$0,01</td>
+            </tr>
+            <tr >
+                <td class="btm-line" colspan="6"></td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td class="ff1 fc0" colspan="2"
+                    style="height: 4mm;
+                           padding-top: 1mm;
+                           padding-bottom: 2mm;
+                           vertical-align: bottom;
+                           font-size: 16px;">Total</td>
+                <td class="ff1 fc0"
+                    style="height: 4mm;
+                           padding-bottom: 2mm;
+                           padding-top: 1mm;
+                           text-align: right;
+                           vertical-align: bottom;
+                           font-size: 16px;" 
+                    id="pdf-total">$0,01</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td class="ff1 fc0" colspan="2"
+                    style="height: 4mm;
+                           padding-top: 1mm;
+                           padding-bottom: 2mm;
+                           vertical-align: bottom;
+                           font-size: 16px;"
+					id="pdf-payment-text"></td>
+                <td class="ff1 fc0"
+                    style="height: 4mm;
+                           padding-bottom: 2mm;
+                           padding-top: 1mm;
+                           text-align: right;
+                           vertical-align: bottom;
+                           font-size: 16px;" 
+                    id="pdf-payment-made">$0,01</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td class="ff1 fc0" colspan="2"
+                    style="height: 4mm;
+                           padding-top: 1mm;
+                           padding-bottom: 2mm;
+                           vertical-align: bottom;
+                           font-size: 16px;"
+					id="pdf-credit-text"></td>
+                <td class="ff1 fc0"
+                    style="height: 4mm;
+                           padding-bottom: 2mm;
+                           padding-top: 1mm;
+                           text-align: right;
+                           vertical-align: bottom;
+                           font-size: 16px;" 
+                    id="pdf-credit-applied">$0,01</td>
+            </tr>
+            <tr>
+                <td class="ff1 fc0" colspan="2"
+                    style="border-bottom: 2.5mm solid #317cf4;
+                           padding-bottom: 2mm;
+                           vertical-align: middle;
+                           font-size: 20px;
+                           padding-top: 3mm;"
+					id="pdf-total-text"></td>
+                <td colspan="3" style="border-bottom: 2.5mm solid #317cf4"></td>
+                <td class="ff1 fc0"
+                    style="border-bottom: 2.5mm solid #317cf4;
+                           padding-bottom: 2mm;
+                           text-align: right;
+                           vertical-align: middle;
+                           font-size: 20px;
+                           padding-top: 3mm;"
+                    id="pdf-amount-due">$0.00</td>
+            </tr>
+			
+			<tr>
+                <td class="ff1 fc0" colspan="2"
+                    style="padding-bottom: 2mm;
+                           vertical-align: middle;
+                           font-size: 18px;
+                           padding-top: 3mm;"
+					id="pdf-notes-title"></td>
+            </tr>
+			<tr>
+                <td class="ff1 fc1" colspan="6"
+                    style="padding-bottom: 2mm;
+                           vertical-align: middle;
+                           font-size: 18px;"
+					id="pdf-notes"></td>
+                
+            </tr>
+			
+			<tr>
+                <td class="ff1 fc0" colspan="2"
+                    style="padding-bottom: 2mm;
+                           vertical-align: middle;
+                           font-size: 18px;
+                           padding-top: 3mm;"
+					id="pdf-terms-title">Terms &amp; Conditions:</td>
+            </tr>
+			<tr>
+                <td class="ff1 fc1" colspan="6"
+                    style="padding-bottom: 2mm;
+                           vertical-align: middle;
+                           font-size: 18px;"
+					id="pdf-terms">All items prices are final.</td>
+                
+            </tr>
+			
+        </table>
+        
+        <div class="ff1 fc1"
+             style="font-size: 16px;
+                    position: absolute;
+                    text-align: center;
+                    width: 100%;
+                    bottom: 0;">InvoicesUnlimited.com Powered By © CJ Technologies LLC</div>
+</page>
+
+    </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

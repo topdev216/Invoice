@@ -1,0 +1,51 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  
+  <div class="container hidesm">
+
+    <h3 class="section-title float-left text-uppercase text-weight-normalize text-color-normalize layout-margin-tb-lg">All Projects <!-- <i class="arrow-down-black"></i>--></h3>
+    <a ui-sref="dashboard.projects.new" class="float-right button button-add text-uppercase">New</a>
+    <form class="float-right layout-margin-t">
+      <input type="text" class="search-bar" placeholder="Search" ng-model="searchText" ng-change = "search()">
+    </form>
+
+      
+  
+      
+    <div class="clearfix"></div>
+ 
+    <table class="table-border-tb" style = "margin-bottom: 20px;">
+      <tr class="thead">
+        <td ng-click="sortByName()" style="cursor:pointer" class="text-uppercase text-info layout-padding-tb-lg">
+          Name <span><img id="nameD" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="nameDUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span>
+        </td>
+        <td ng-click="sortByCustomer()" style="cursor:pointer" class="text-uppercase text-info layout-padding-tb-lg">
+            Customer Name <span><img id="custNameD" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span>
+            <span><img id="custNameDUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span>
+          </td>
+        <td ng-click="sortByDesc()" style="cursor:pointer" class="text-uppercase text-info layout-padding-tb-lg">
+            Description <span><img id="descD" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span>
+          <span><img id="descDUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span>
+          </td>
+        <td ng-click="sortByBilling()" style="cursor:pointer" class="text-uppercase text-info layout-padding-tb-lg">
+            Billing Method <span><img id="billMD" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span>
+          <span><img id="billMDUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span>
+          </td>
+        <td ng-click="sortByAmount()" style="cursor:pointer" class="text-uppercase text-info layout-padding-tb-lg">
+            Price <span><img id="priceD" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span>
+          <span><img id="priceDUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span>
+          </td>
+      </tr>
+      <tr ng-repeat="project in projectList"
+        ui-sref="dashboard.projects.details({projectId:project.entity.id})" style="cursor:pointer">
+        <td class="text-color-light layout-padding-tb-lg">{{project.entity.projectName}}</td>
+        <td class="text-color-light layout-padding-tb-lg">{{project.customer.salutation + ' ' + project.customer.displayName}}</td>
+        <td class="text-color-light layout-padding-tb-lg" style="width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px;">{{project.entity.projectDescription}}</td>
+        <td class="text-color-light layout-padding-tb-lg">{{project.entity.billingMethod}}</td>
+        <td class="text-color-light layout-padding-tb-lg">{{project.entity.projectBillingAmount}}</td>
+      </tr>
+      
+    </table>
+
+  </div>
+
+ <div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

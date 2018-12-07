@@ -1,0 +1,47 @@
+  <header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  
+  <div class="container hidesm">
+    <h3 class="layout-margin-t section-title float-left">Payments Settings</h3>
+    <div class="clearfix"></div>
+    <div class="spacer"></div>
+
+    <div class="paymentInfo" ng-show="incompleteProfile">
+      <p ng-bind-html="infoMsg"></p>
+      <a ng-click="continueProcess()" class="button button-primary button-next">Continue</a>
+    </div>
+    
+    <div class="paymentInfo" ng-show="processingRequest">
+      <p ng-bind-html='infoMsg'></p>
+      <label class="col-50">Phone Number</label>
+      <label>{{phoneNumber}}</label>
+      <br />
+      <label class="col-50">Email</label>
+      <label><a style="cursor: pointer;" ng-click="sendEmail()">{{email}}</a></label>
+    </div>
+
+    <div class="paymentInfo" ng-show="approved">
+      <p>{{infoMsg}}</p>
+      <label class="col-50">Merchant ID</label>
+      <label>{{merchantID}}</label>
+      <br />
+      <label class="col-50">Business Name</label>
+      <label>{{businessName}}</label>
+      
+      <br /><br />
+      <p>24/7 Merchant Account Support:</p>
+      <label class="col-50">Phone Number</label>
+      <label>{{accountSupportNumber}}</label>
+
+      <br /><br/>
+      <p>Software Support:</p>
+      <label class="col-50">Phone Number</label>
+      <label>{{softwareSupportNumber}}</label>
+      <br />
+      <label class="col-50">Email</label>
+      <label><a style="cursor: pointer;" ng-click="sendEmail()">{{email}}</a></label>
+
+    </div>
+
+  </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

@@ -1,0 +1,81 @@
+<div class="overlay tutorial">
+    <section class="sign-up text-center">
+        <h1><strong>STEP 2</strong></h1>
+        <label>Customizing your app by choosing the color.</label>
+        <a href="" ng-click="nextClicked();" class="button button-primary button-next">Next</a>
+        <a ui-sref="dashboard.settings.taxes" href="" class="skip-tutorial" >SKIP</a>
+    </section>
+</div>
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+<div class="container hidesm">
+    <h3 class="layout-margin-t section-title">Preferences</h3>
+    <hr>
+    <form action="" class="inputs-white col-60">
+
+        <div class="input-container layout-margin-b">
+        <label class="layout-padding-t-smm">Track Usage</label>
+            <input type="checkbox" ng-disabled="role == 'Staff'" ng-model="trackUsage" class="col-75" style="margin-top: 15px;"/>
+      </div>
+        
+      <div class="input-container layout-margin-b">
+        <label class="layout-padding-t-smm">Opening Screen</label>
+        <select class="col-75" ng-model="selectedScreen" ng-options="screen for screen in openingScreens">
+          <option value="" disabled>Select Opening Screen</option>
+        </select>
+      </div>
+      <div class="input-container layout-margin-b">
+        <label class="layout-padding-t-smm">Colors</label>
+        <ul class="col-75 colors">
+          <li class="col-25">
+            <a class="blue"></a>
+          </li>
+          <li class="col-25">
+            <a class="seagreen"></a>
+          </li>
+          <li class="col-25">
+            <a class="green"></a>
+          </li>
+          <li class="col-25">
+            <a class="yellow"></a>
+          </li>
+          <li class="col-25">
+            <a class="brown"></a>
+          </li>
+          <li class="col-25">
+            <a class="red"></a>
+          </li>
+          <li class="col-25">
+            <a class="pink"></a>
+          </li>
+          <li class="col-25">
+            <a class="purple"></a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="clearfix spacer"></div>
+
+      <span class="button button-info text-uppercase text-weight-normalize" ng-click="showConfirmationPopUp()">Save</span>
+
+    </form>
+  </div>
+<div class="popup-modal confirmation-pop-up hidesm">
+    <div class="modal container" style="width: 650px !important;">
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Confirm</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center" style="margin-bottom: 20px; margin-top: 20px; margin-left: -15px;">
+        <label>Do you want to apply these changes?</label>
+      </div>
+      <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+      <button class="button button-small button-default text-uppercase modal-close float-right"
+        ng-click="">Cancel</button>
+      <button style="margin-right: 15px; background-color:#3183f5;margin-bottom: 20px;" class="button button-small button-danger text-uppercase float-right" ng-click="saveAppPreferences()">Save</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

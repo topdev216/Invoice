@@ -1,0 +1,264 @@
+<div class="overlay tutorial">
+    <section class="sign-up text-center">
+    
+        <h1><strong>STEP 3</strong></h1>
+        
+        <label>Create a tax for your items. Example: <br/> sales tax, state tax, etc.</label>
+        
+        <a href="" ng-click="nextClicked();" class="button button-primary button-next">Next</a>
+        
+        <a ui-sref="dashboard.settings.items" href="" class="skip-tutorial" >SKIP</a>
+        
+    </section>
+</div>  
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+
+  <div class="container hidesm">
+       
+    <h3 class="layout-margin-t section-title float-left">Taxes</h3>
+    <a href="javascript:" style="margin-left: 10px !important;" class="float-right layout-margin-tb button button-add text-transform modal-opener" data-toggle="new-tax" ng-click="clearAddItemFields()">New Tax</a>
+      <a href="javascript:" class="float-right layout-margin-tb button button-add text-transform modal-opener" data-toggle="new-tax-group" ng-click="clearAddTaxGroupFields()">New Tax Group</a>
+      
+    <form class="float-right layout-margin-tb">
+    <input type="text" class="search-bar layout-margin-r" placeholder="Search" ng-model="searchText" ng-change = "search()" >
+    </form>
+
+    <table class="table-border-tb show_table_hover" style = "margin-bottom: 20px;">
+      <tr style="cursor: pointer" class="thead">
+        <td ng-click = "sortByTaxName()"class="text-uppercase text-info layout-padding">Name<span><img id="name" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="nameUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></td>
+        <td ng-click = "sortByPercentage()" class="text-uppercase text-info layout-padding">Percentage<span><img id="percentage" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="percentageUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></td>
+        <!--<img src="./assets/images/dropdown-arrow-primary.png" alt="">-->
+        <td class="text-uppercase text-info layout-padding text-right"></td>
+      </tr>
+      <tr class="trow" ng-repeat="tax in taxes">
+        <td class="text-color-light text-weight-normalize layout-padding" ng-click="editTax(tax)">{{tax.name}}</td>
+        <td class="text-color-light text-weight-normalize layout-padding" ng-click="editTax(tax)">{{tax.rate + ' %'}}</td>
+        <td class="text-color-light text-weight-normalize layout-padding text-right"><img src="./assets/images/icon-times-round.png" alt="" ng-click="deleteTax(tax)"/></td>
+      </tr>
+    </table>
+
+  </div>
+
+  <div class="popup-modal new-tax hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Add Tax</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addTaxForm" class="layout-margin-tb inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Tax Name</label>
+            <input maxlength="60" name="name" type="text" class="col-75" placeholder="Type to add" ng-model="taxName">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label min="0" class="layout-padding-t-sm">Percentage</label>
+            <input maxlength="60" name="rate" id = "rateD" onkeypress="numberValidation(event)"  type="number" class="col-75" placeholder="%" ng-model="taxRate">      
+            </div>
+          <div class="col-25 spacer"></div>
+          <label class="input-container input-checkbox-container col-75 pull-right">
+            <input type="checkbox" ng-model="isCompound">
+            <span Style="margin-top: 0%" class="checkbox float-left"></span>
+            <p class="float-left">Yes this tax is a compound tax</p>
+            <div class="tooltip-sec float-left">
+              <i class="info-icon pull-top"></i>
+             <p sTYLE="font-size: 11px;margin-left: 5px;background-color: #666; color: #fff; border-right: 10px #666 solid; border-right-width: 10px;border-right-style: solid;border-right-color: rgb(102, 102, 102); border: none;  z-index: 1000 !important;" class="info-tooltip tooltip-dark darktooltip">
+                A Compound tax is calculated on top of the primary tax. Let's take an example where the price of an item is $100. After applying 10% primary tax, the value of the item sums up to $110. Now, adding a 10% compound tax will add 10% of $110 to the resultant value.
+              </p>
+            </div>
+          </label>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase"
+        ng-click="saveNewTax()">Save</button>
+    </div>
+  </div>
+
+  <div class="popup-modal new-tax-group hidesm">
+    <div style="max-height: calc(100vh - 210px); overflow-y: auto;" class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Add Tax Group</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="addTaxGroupForm" class="inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Tax Group Name</label>
+            <input maxlength="60" name="name" type="text" class="col-75" placeholder="Type to add" ng-model="taxGroupName">
+          </div>
+          
+          <div class="col-25 spacer">Select Taxes to add:</div>
+            <table class="table-border-tb">
+             <tr class="thead">
+               <td class="text-uppercase text-info layout-padding-tb-lg">
+
+               </td>
+               <td class="text-uppercase text-info layout-padding-tb-lg">Tax Name</td>
+               <td class="text-uppercase text-info layout-padding-tb-lg text-left">Percentage</td>
+             </tr>
+             <tr class="trow" ng-repeat="tax in taxesForGroup">
+               <td class="text-uppercase text-info layout-padding-tb-lg">
+                 <label class="input-container input-checkbox-container layout-margin-tb">
+                   <input type="checkbox" ng-model="shouldAdd[$index]">
+                   <span class="checkbox float-left"></span>
+                 </label>
+               </td>
+               <td class="text-color-light text-weight-normalize layout-padding-tb-lg">{{tax.name}}</td>
+               <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" >{{tax.rate}}</td>
+             </tr>
+           </table>
+          
+        </form>
+      </div>
+        <div class="col-25 spacer"></div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase"
+        ng-click="saveNewGroupTax()">Save</button>
+    </div>
+  </div>
+
+<div class="popup-modal edit-tax-group hidesm">
+    <div style="max-height: calc(100vh - 210px); overflow-y: auto;" class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Edit Tax Group</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt=""></button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="editTaxGroupForm" class="inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Tax Group Name</label>
+            <input maxlength="60" name="name" type="text" class="col-75" placeholder="Type to add" ng-model="taxGroupName">
+          </div>
+          
+          <div class="col-25 spacer">Select Taxes to add:</div>
+            <table class="table-border-tb">
+             <tr class="thead">
+               <td class="text-uppercase text-info layout-padding-tb-lg">
+
+               </td>
+               <td class="text-uppercase text-info layout-padding-tb-lg">Tax Name</td>
+               <td class="text-uppercase text-info layout-padding-tb-lg text-left">Percentage</td>
+             </tr>
+             <tr class="trow" ng-repeat="tax in taxesForGroup">
+               <td class="text-uppercase text-info layout-padding-tb-lg">
+                 <label class="input-container input-checkbox-container layout-margin-tb">
+                   <input type="checkbox" ng-model="shouldAdd[$index]">
+                   <span class="checkbox float-left"></span>
+                 </label>
+               </td>
+               <td class="text-color-light text-weight-normalize layout-padding-tb-lg">{{tax.name}}</td>
+               <td class="text-color-light text-weight-normalize layout-padding-tb-lg text-left" >{{tax.rate}}</td>
+             </tr>
+           </table>
+          
+        </form>
+      </div>
+        <div class="col-25 spacer"></div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase"
+        ng-click="updateGroupTax()">Save</button>
+    </div>
+  </div>
+
+  <div class="popup-modal edit-tax hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Edit Tax</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form id="editTaxForm" class="layout-margin-tb inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Tax Name</label>
+            <input maxlength="60" name="name" type="text" class="col-75" placeholder="Type to add" ng-model="taxName">
+          </div>
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Percentage</label>
+        
+          <input maxlength="60" name="rate" type="text" id = "rateD" onkeypress="numberValidation(event)"  class="col-75" placeholder="%" ng-model="taxRate">
+            
+            </div>
+          <div class="col-25 spacer"></div>
+          <label class="input-container input-checkbox-container col-75 pull-right">
+            <input type="checkbox" ng-model="isCompound">
+            <span Style="margin-top: 5px" class="checkbox float-left"></span>
+            <p Style="margin-top: 5px" class="float-left">Yes this tax is a compound tax</p>
+            <div class="tooltip-sec float-left">
+                <span style="margin-top: -10px !important" class="info-icon info-icon-gray"></span>
+              <p sTYLE="font-size: 11px;margin-left: 5px;background-color: #666; color: #fff; border-right: 10px #666 solid; border-right-width: 10px;border-right-style: solid;border-right-color: rgb(102, 102, 102); border: none;  z-index: 1000 !important;" class="info-tooltip tooltip-dark darktooltip"  >
+                A Compound tax is calculated on top of the primary tax. Let's take an example where the price of an item is $100. After applying 10% primary tax, the value of the item sums up to $110. Now, adding a 10% compound tax will add 10% of $110 to the resultant value.
+              </p>
+            </div>
+          </label>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase float-left"
+        ng-click="saveEditedTax()">Save</button>
+      <button Style="z-index: -10" class="button button-small button-danger text-uppercase float-right" ng-click="deleteTaxWithotConfirm()">Delete</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+
+  <div class="popup-modal new-tax-category hidesm">
+    <div class="modal container">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">New Tax Group</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center">
+        <form action="" class="layout-margin-tb inputs-white">
+          <div class="input-container layout-margin-b">
+            <label class="layout-padding-t-sm">Tax Group Name</label>
+            <input type="text" class="col-75" placeholder="Lorem Ipsum">
+          </div>
+          <div class="input-container layout-margin-tb" ng-repeat="tax in taxes">
+            <label class="input-checkbox-container layout-no-margin col-85">
+              <input type="checkbox">
+              <span class="checkbox float-left"></span>
+              <p class="float-left">{{tax.name}}</p>
+            </label>
+            <p class="col-15 layout-no-margin text-right">{{tax.rate}}</p>
+          </div>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+      <button class="button button-small button-info text-uppercase">Save</button>
+    </div>
+  </div>
+ 
+  <div class="popup-modal delete-tax hidesm">
+    <div class="modal container" style="width: 650px !important;">
+
+      <h3 class="section-title layout-no-margin text-uppercase text-color-normalise text-weight-normalize float-left">Delete Tax</h3>
+      <button class="button button-icon float-right modal-close"><img src="./assets/images/icon-times.png" alt="">
+      </button>
+      <div class="clearfix"></div>
+      <hr class="layout-margin-tb">
+
+      <div class="col-80 text-left layout-center" style="margin-bottom: 20px; margin-top: 20px; margin-left: -15px;">
+        <label>Are you sure want to delete this tax?</label>
+      </div>
+      <div class="clearfix"></div>
+        <hr class="layout-margin-tb">
+      <button class="button button-small button-default text-uppercase modal-close float-right"
+        ng-click="">Cancel</button>
+      <button style="margin-right: 15px;" class="button button-small button-danger text-uppercase float-right" ng-click="confirmDelete()">Delete</button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+ 
+  <div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

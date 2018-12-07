@@ -1,0 +1,33 @@
+  <header class="sticky-nav logo-only">
+    <a href="#"><img src="./assets/images/01_IU-Web-Admin.png" alt="Invoices Unlimited"></a>
+  </header>
+
+  <section class="signature">
+
+    <h2 class="text-uppercase text-center">Signature</h2>
+
+  <form id="sigForm">
+    <div class="container">
+      <label class="float-left input-checkbox-container checkbox-agree layout-margin-b">
+        <input name="agree-box" type="checkbox">
+        <span class="checkbox float-left"></span>
+        <p class="float-left">I agree to the 
+          <a target="_blank" href="http://app.invoicesunlimited.com/signatureTerms.html">Terms &amp; Conditions</a></p>
+        <label name="sigError"></label>
+      </label>
+      <div class="clearfix"></div>
+
+      <button id="clear" class="button button-white button-clear">Clear X</button>
+
+      <div id="sig"></div>
+      <span></span>
+
+    </div>
+  </form>
+
+    <div class="container signature-footer">
+      <h3>{{fullName}}</h3>
+      <a ng-click="submitSignature();" class="button button-primary text-uppercase">Submit</a>
+    </div>
+
+  </section>

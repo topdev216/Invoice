@@ -1,0 +1,132 @@
+<header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+<style>
+.uib-daypicker
+{
+    width: 300px !important;
+    margin-left: 5px;
+}
+</style>
+  <div class="container hidesm">
+    <h3 class="float-left section-title text-uppercase text-color-normalize layout-margin-t">Customer Balances</h3>
+  <!----    
+      <div class="actions float-right layout-margin-tb" uib-dropdown>
+    <button id="reports-ul-btn" class="button button-small button-neutral text-uppercase float-right layout-margin-t-sm " uib-dropdown-toggle>More<img src="./assets/images/dropdown-arrow-w.png" alt="">
+    </button>
+        <ul class="submenu list-clear layout-no-padding text-left text-normalize" uib-dropdown-menu>
+            <li><a>Email</a></li>
+            <li><a>Print</a></li>
+      </ul>
+      </div>
+    <div class="clearfix"></div>
+      
+
+      
+    <div class="container-table layout-margin-t inputs-white filter">
+      <div class="thead">
+        <p class="layout-margin-tb col-25 text-uppercase text-color-normalize text-weight-normalize">Date Range</p>
+        <p class="layout-margin-tb col-20 text-uppercase text-color-normalize text-weight-normalize">From</p>
+        <p class="layout-margin-tb col-20 text-uppercase text-color-normalize text-weight-normalize">To</p>
+        <p class="layout-margin-tb col-20 text-uppercase text-color-normalize text-weight-normalize"></p>
+      </div>
+      <div class="table-row row-border datepicker-noclear">
+        <p class="col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+          <select class="layout-no-padding layout-padding-l same_height" ng-options="range for range in dateRanges"
+            ng-model="selectedDateRange" ng-change="dateRangeChanged()">
+          </select>
+        </p>
+        <p class="col-20 datepicker-reports-fix input-container layout-margin-tb text-color-light text-weight-normalize">   
+           <input type="text" uib-datepicker-popup="{{dateFormat}}"
+            ng-model="fromDate" is-open="openPicker1" ng-click="openDatePicker(1)" show-weeks="false"  readonly>    
+        </p>
+        <p class="col-20 datepicker-reports-fix layout-container layout-margin-tb text-color-light text-weight-normalize">
+          <input type="text" uib-datepicker-popup="{{dateFormat}}" ng-model="toDate"
+            is-open="openPicker2" ng-click="openDatePicker(2)" show-weeks="false" readonly>
+        </p>
+        <p class="col-20 layout-margin-tb text-color-light text-weight-normalize">
+          <button class="button button-info text-uppercase" ng-click="generateReport()">Run Report</button>
+        </p>
+      </div>
+    </div>
+      
+      --->
+    <div class="clearfix"></div><br>
+    <!--
+     <div class="container text-center">
+      <h3 class="layout-margin-tb text-color-normalize text-weight-normalize">Merchant Account Solutions</h3>
+      <p class="layout-no-margin text-color-light text-weight-normalize">Customer Balances</p>
+      <p class="layout-no-margin text-color-light text-weight-normalize">From {{fromDateStr}} To {{toDateStr}}</p>
+    </div>
+      ---> 
+    <div class="container text-center">
+      <h3 class="layout-margin-tb text-color-normalize text-weight-normalize">Merchant Account Solutions</h3>
+      <p class="layout-no-margin text-color-light text-weight-normalize">Customer Balances</p>
+      <p class="layout-no-margin text-color-light text-weight-normalize">As of {{toDateStr}}</p>
+    </div>
+    <br>
+    <div style="cursor: pointer" class="container-table layout-margin-t inputs-white filter">
+      <div  class="thead">
+        <h3 ng-click="sortByName()" class="layout-margin-tb col-25 text-uppercase text-weight-normalize">Customer Name
+        
+            
+            <span><img id="name" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span>
+            
+            <span><img id="nameUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></h3>
+        
+          
+          
+        <h3 ng-click="sortByBalance()" class="text-center layout-margin-tb col-25 text-uppercase text-weight-normalize">Invoice Balance<span><img id="balance" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="balanceUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></h3>
+          
+        <h3 ng-click="sortByCredit()" class="text-center layout-margin-tb col-25 text-uppercase text-weight-normalize">Available Credits<span><img id="credit" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="creditUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></h3>
+          
+        <h3 ng-click="sortByCustomerBalance()" class="text-center layout-margin-tb col-25 text-uppercase text-weight-normalize">Balance<span><img id="customerbalance" style="display: none" src="./assets/images/dropdown-arrow-primary.png"></span><span><img id="customerbalanceUp" style="display: none" src="./assets/images/dropdown-arrow-primary_up.png"></span></h3>
+        <!--
+        <h3 class="layout-margin-tb col-25 text-uppercase text-weight-normalize">Invoice Balance (FCY) <img src="./assets/images/dropdown-arrow-primary.png" alt=""></h3> 
+        <h3 class="layout-margin-tb col-25 text-uppercase text-weight-normalize">Available Credits (FCY) <img src="./assets/images/dropdown-arrow-primary.png" alt=""></h3> -->
+        
+      </div>
+      <div class="table-row row-border" ng-repeat="id in ids">
+        <div class="col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+          {{info[id].name}}
+        </div>
+          <div class="text-center col-25 layout-margin-tb text-color-light text-weight-normalize">
+          {{info[id].balanceDueStr}}
+        </div>
+        <div class="text-center col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+          {{info[id].availableCreditStr}}
+        </div>
+          <div class="text-center col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+          {{info[id].customerBalanceStr}}
+        </div>
+          <!--
+        <div class="col-25 layout-container layout-margin-tb text-color-light text-weight-normalize">
+          <a>$12.20</a>
+        </div> -->
+          
+          
+        
+      </div>
+      <div class="table-row row-border" style="margin-bottom: 50px !important">
+        <div class="col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+          Total
+        </div>
+        <div class="text-center col-25 layout-margin-tb text-color-light text-weight-normalize">
+          {{totalBalanceStr}}
+        </div>
+          
+        <div class="text-center col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+            {{totalCreditStr}}
+        </div>
+          <div class="text-center col-25 input-container layout-margin-tb text-color-light text-weight-normalize">
+            {{totalCustomerBalanceStr}}
+        </div>
+          <!--
+        <div class="col-25 layout-container layout-margin-tb text-color-light text-weight-normalize">
+          $25.45
+        </div> -->
+        
+      </div>
+ 
+    </div>
+  </div>
+
+<div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>

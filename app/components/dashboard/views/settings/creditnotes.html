@@ -1,0 +1,60 @@
+  <header class="dashboard-header hidesm" ng-include src="'./app/shared/dashboard/headerView.html'"></header>
+  <div class="container hidesm">
+
+    <h3 class="layout-margin-t section-title">Credit Notes</h3>
+    <hr>
+
+    <form id="settingsForm" class="col-60">
+      <div class="clearfix"></div>
+      <br>
+      <h3 class="text-uppercase text-weight-normalize layout-margin-b">Credit Note Number</h3><br>
+
+      <div class="input-container input-radio-container layout-margin-b">
+        <label class="col-25">Auto Generation</label>
+        <label class="layout-padding-t-sm col-10">
+          <span class="layout-margin-r">
+            <input type="radio" name="autogeneration" value="yes" ng-model="creditAg">
+            <span class="radio"></span>
+          </span>
+          Yes
+        </label>
+        <label class="layout-padding-t-sm col-10">
+          <span class="layout-margin-r">
+            <input type="radio" name="autogeneration" value="no" ng-model="creditAg">
+            <span class="radio"></span>
+          </span>
+          No
+        </label>
+      </div>
+
+      <div class="input-container layout-margin-b" ng-show="creditAg == 'yes'">
+        <label class="layout-padding-t-smm">Prefix</label>
+        <input maxlength="60" name="prefix" type="text" class="col-75" value="CN-" ng-model="prefix">
+      </div>
+      <div class="input-container layout-margin-b" ng-show="creditAg == 'yes'">
+        <label class="layout-padding-t-smm">Next Number</label>
+        <input maxlength="60" name="nextNumber" type="text" class="col-75" value="000002" ng-model="nxtNumber">
+      </div>
+
+      <div class="clearfix"></div>
+      <br>
+
+      <h3 class="text-uppercase text-weight-normalize layout-margin-tb">Notes &amp; Terms</h3><br>
+
+      <div class="input-container input-radio-container layout-margin-b">
+        <label class="col-25">Credit Notes</label>
+        <textarea class="col-75"  maxlength="200" ng-model="notes" onkeyup="auto_grow(this)"></textarea>
+      </div>
+      <div class="input-container input-radio-container layout-margin-b">
+        <label class="col-25">Terms &amp; Conditions</label>
+        <textarea class="col-75" maxlength="1000" ng-model="terms" onkeyup="auto_grow(this)"></textarea>
+      </div>
+
+      <div class="clearfix spacer"></div>
+      <button class="button button-info text-uppercase" ng-click="save()"style = "margin-bottom: 20px;">Save</button>
+
+    </form>
+
+  </div>
+
+  <div class="onmobile" ng-include src="'./app/shared/dashboard/onMobileView.html'"></div>
